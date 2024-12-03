@@ -28,7 +28,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
         ),
       ],
       currentIndex: currentIndex,
-      selectedItemColor: Colors.blue,
+      selectedItemColor: Color(0xFF233973),
       unselectedItemColor: Colors.grey,
       onTap: onTap,
       type: BottomNavigationBarType.fixed, // Menonaktifkan efek zoom
