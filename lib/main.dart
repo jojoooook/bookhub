@@ -13,7 +13,7 @@ class BookHub extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'BookHub', // Set the title of your app
-      initialRoute: ProfileScreen.routeName, // Set initial route to ProfileScreen
+      initialRoute: HomeScreen.routeName, // Set initial route to ProfileScreen
       routes: {
         '/home': (context) => HomeScreen(), // Define the route for HomeScreen
         ProfileScreen.routeName: (context) => ProfileScreen(), // Define ProfileScreen route here
