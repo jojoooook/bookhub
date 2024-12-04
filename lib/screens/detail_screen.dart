@@ -1,3 +1,4 @@
+import 'package:bookhub/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import '/models/book.dart';
 import '/data/book_data.dart'; // Import data buku
@@ -27,7 +28,7 @@ class DetailScreen extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.arrow_back),
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+                        Navigator.pushReplacementNamed(context, MainScreen.routeName);
                       },
                     ),
                   ],
