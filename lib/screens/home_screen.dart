@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import '/models/book.dart';
 import 'package:bookhub/data/book_data.dart';
-import 'package:bookhub/screens/custom_bottom_navigation_bar.dart';
+
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   static const String routeName = '/home';
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
   String _selectedCategory = 'Fantasy'; // Default selected category
 
   final List<String> categories = ['Fantasy', 'Romance', 'Mystery', 'Thriller', 'Comedy'];
@@ -260,26 +261,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-      ),
-
-
-      // NAVBAR
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-            if (index == 0) {
-              Navigator.pushReplacementNamed(context, '/home');
-            } else if (index == 1) {
-              // Navigate to bookmark screen (replace with your actual logic)
-            } else if (index == 2) {
-              // Navigate to search screen (replace with your actual logic)
-            } else if (index == 3) {
-              Navigator.pushReplacementNamed(context, '/profile'); // Navigate to Profile screen
-            }
-          });
-        },
       ),
     );
   }
