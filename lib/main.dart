@@ -1,6 +1,7 @@
 import 'package:bookhub/screens/home_screen.dart';
 import 'package:bookhub/screens/main_screen.dart';
 import 'package:bookhub/screens/profile_screen.dart';
+import 'package:bookhub/screens/search_screen.dart'; 
 import 'package:bookhub/screens/edit_profile_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -18,4 +19,3 @@ class BookHub extends StatelessWidget {
       //   '/home': (context) => HomeScreen(), // Define the route for HomeScreen
       //   ProfileScreen.routeName: (context) => ProfileScreen(), // Define ProfileScreen route here
   }
-}
