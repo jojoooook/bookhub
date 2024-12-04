@@ -1,3 +1,4 @@
+import 'package:bookhub/screens/detail_screen.dart';
 import 'package:bookhub/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen(), // Panggil MainScreen dari screens/main_screen.dart
+      home: DetailScreen(), // Panggil MainScreen dari screens/main_screen.dart
     );
   }
 }

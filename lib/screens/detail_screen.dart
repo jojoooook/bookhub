@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-
+import '/models/book.dart';
 
 class DetailScreen extends StatelessWidget {
+  final Book book;
+
+  // Constructor untuk menerima data buku
+  DetailScreen({required this.book});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -11,10 +16,10 @@ class DetailScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context); // Kembali ke layar sebelumnya
           },
         ),
-        title: const Text('Ther Melian: Discord'),
+        title: Text(book.title),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -27,29 +32,32 @@ class DetailScreen extends StatelessWidget {
               Center(
                 child: Column(
                   children: [
-                    // Placeholder untuk gambar buku
+                    // Gambar Buku
                     Container(
                       width: 120,
                       height: 180,
                       decoration: BoxDecoration(
-                        color: Colors.grey[300],
                         borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Image.asset(
+                        book.imageUrl,
+                        fit: BoxFit.cover,
                       ),
                     ),
                     const SizedBox(height: 16),
                     // Judul dan penulis
-                    const Text(
-                      'Ther Melian: Discord',
-                      style: TextStyle(
+                    Text(
+                      book.title,
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Author: Shienny M.S\nNovember 14, 2016',
+                    Text(
+                      'Author: ${book.author}',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: Colors.grey,
                       ),
@@ -59,36 +67,90 @@ class DetailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               // Rating dan Info Buku
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Rating bintang
-                  Row(
-                    children: const [
-                      Icon(Icons.star, color: Colors.amber),
-                      SizedBox(width: 4),
-                      Text(
-                        '4.8/5',
-                        style: TextStyle(fontSize: 16),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 2), // Perubahan posisi bayangan
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    // Rating bintang
+                    Row(
+                      children: [
+                        const Icon(Icons.star, color: Colors.amber, size: 20),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${book.rating} ',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const Text(
+                          '/5',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                    // Garis pemisah
+                    Container(
+                      height: 24,
+                      width: 1,
+                      color: Colors.grey[300],
+                    ),
+                    // Genre
+                    Text(
+                      book.genre,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.black,
                       ),
-                    ],
-                  ),
-                  // Genre dan jumlah halaman
-                  Row(
-                    children: const [
-                      Chip(
-                        label: Text('Fantasy'),
-                        backgroundColor: Colors.blue,
-                        labelStyle: TextStyle(color: Colors.white),
+                    ),
+                    // Garis pemisah
+                    Container(
+                      height: 24,
+                      width: 1,
+                      color: Colors.grey[300],
+                    ),
+                    // Jumlah halaman
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '${book.pages} ',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const TextSpan(
+                            text: 'Pages',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(width: 8),
-                      Text(
-                        '340 Pages',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
               // Sinopsis
@@ -100,9 +162,9 @@ class DetailScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                "Due to an unexpected ally, Valadin and his friends managed to escape, Not only that, they also waged a battle in the Temple city. On the other hand, Vrey discovered the reason behind Reuven's abandonment his father a dozen years ago, But, the answer she found actually incised a deeper wound and made his feelings even more broken. The war started by Valadin and his friends broke out in front of very",
-                style: TextStyle(
+              Text(
+                book.synopsis,
+                style: const TextStyle(
                   fontSize: 16,
                   height: 1.5,
                 ),
@@ -118,6 +180,7 @@ class DetailScreen extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue[900],
+                        foregroundColor: Colors.white, // Warna teks putih
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: const Text('Add To Bookmark'),
@@ -131,6 +194,7 @@ class DetailScreen extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: const Text('Give Rating'),
