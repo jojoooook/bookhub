@@ -5,7 +5,6 @@ import 'package:bookhub/models/book.dart';
 
 class SearchScreen extends StatefulWidget {
   static const routeName = '/search';
-
   const SearchScreen({super.key});
   
   @override
@@ -17,7 +16,6 @@ class _SearchScreenState extends State<SearchScreen> {
   List<String> _recentSearches = [];
   List<Book> _searchResults = [];
   bool _isBookFound = true;
-  int _currentIndex = 2;
 
   List<Book> get bookData => books;
 

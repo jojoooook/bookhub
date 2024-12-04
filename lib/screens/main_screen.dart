@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bookhub/screens/home_screen.dart';
 // import 'favorite_screen.dart';
-// import 'search_screen.dart';
+import 'search_screen.dart';
 import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -16,7 +16,7 @@ class MainScreen extends StatefulWidget {
   static const List<Widget> _screenOptions = <Widget>[
     HomeScreen(),
     // FavoriteScreen(),
-    // SearchScreen(),
+    SearchScreen(),
     ProfileScreen()
   ];
 
