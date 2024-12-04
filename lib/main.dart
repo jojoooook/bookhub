@@ -1,9 +1,11 @@
+import 'package:bookhub/screens/detail_screen.dart';
 import 'package:bookhub/screens/home_screen.dart';
 import 'package:bookhub/screens/main_screen.dart';
 import 'package:bookhub/screens/profile_screen.dart';
 import 'package:bookhub/screens/search_screen.dart'; 
 import 'package:bookhub/screens/edit_profile_screen.dart';
 import 'package:flutter/material.dart';
+
 
 void main() {
   runApp(BookHub());
