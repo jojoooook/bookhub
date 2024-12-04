@@ -8,6 +8,9 @@ class Book {
   final String imageUrl;
   final String genre;
   final double rating;
+  final String pages;
+  final String synopsis;
+  final String date;
 
   Book({
     required this.title,
@@ -15,6 +18,9 @@ class Book {
     required this.imageUrl,
     required this.genre,
     required this.rating,
+    required this.pages,
+    required this.synopsis,
+    required this.date,
   });
   String toJson() {
     return '{"title": "$title", "author": "$author", "genre": "$genre", "imageUrl": "$imageUrl"}';
@@ -29,6 +35,9 @@ class Book {
       genre: data['genre'],
       imageUrl: data['imageUrl'], 
       rating: data['rating'],
+      pages: data['pages'],
+      synopsis: data['synopsis'],
+      date: data['date']
     );
   }
 }
