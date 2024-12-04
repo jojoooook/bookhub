@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '/models/book.dart';
 import 'package:bookhub/data/book_data.dart';
-
+import 'package:bookhub/screens/detail_screen.dart';  // Import DetailScreen
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -54,7 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,8 +70,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
-              // RECENT OPENED BOOKS
-
               const Text(
                 'Recent Opened Books',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -87,13 +84,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     final book = books[index];
                     return GestureDetector(
                       onTap: () {
-                        print('Tapped on ${book.title}');
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => DetailScreen(book: book),
-                        //   ),
-                        // );
+                        // Navigasi ke DetailScreen
+                        Navigator.pushNamed(
+                          context,
+                          DetailScreen.routeName,
+                          arguments: index, // Kirimkan index buku
+                        );
                       },
                       child: Container(
                         width: 120,
@@ -124,14 +120,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.star,
-                                            size: 14, color: Colors.amber),
+                                        Icon(Icons.star, size: 14, color: Colors.amber),
                                         SizedBox(width: 4),
                                         Text(
                                           '${book.rating}',
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white),
+                                          style: TextStyle(fontSize: 12, color: Colors.white),
                                         ),
                                       ],
                                     ),
@@ -168,16 +161,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: categories.map((category) {
-                    return Container(  // Menggunakan Container dengan margin
-                      margin: const EdgeInsets.symmetric(horizontal: 4.0),  // Adjust margin
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: _buildCategoryButton(category),
                     );
                   }).toList(),
                 ),
               ),
               SizedBox(height: 32),
-
-              // Display filtered books based on selected category
               Text(
                 'Books in $_selectedCategory category',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -192,7 +183,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     final book = filteredBooks[index];
                     return GestureDetector(
                       onTap: () {
-                        print('Tapped on ${book.title}');
+                        // Navigasi ke DetailScreen
+                        Navigator.pushNamed(
+                          context,
+                          DetailScreen.routeName,
+                          arguments: index, // Kirimkan index buku
+                        );
                       },
                       child: Container(
                         width: 120,

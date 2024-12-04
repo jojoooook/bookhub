@@ -18,7 +18,7 @@ final List<Book> books = [
       rating: 4.8,
       pages: '350',
       synopsis: 'Text',
-date: '14 November 2016'),
+      date: '14 November 2016'),
   Book(
       title: 'Book 3',
       author: 'Author 3',

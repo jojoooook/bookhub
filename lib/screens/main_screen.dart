@@ -6,7 +6,7 @@ import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
-
+  static const String routeName = '/main';
   @override
   State<MainScreen> createState() => _MainScreenState();
 }

@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import '/models/book.dart';
 import '/data/book_data.dart'; // Import data buku
-import 'package:bookhub/screens/home_screen.dart';
+import '/screens/home_screen.dart';
 
 class DetailScreen extends StatelessWidget {
-  final int bookIndex; // Index buku dalam daftar
-
   static const String routeName = '/detail';
-
-  DetailScreen({required this.bookIndex}); // Constructor menerima index buku
 
   @override
   Widget build(BuildContext context) {
+    // Mendapatkan index buku yang dikirim melalui arguments
+    final int bookIndex = ModalRoute.of(context)!.settings.arguments as int;
     final Book book = books[bookIndex]; // Ambil buku berdasarkan index
 
     return Scaffold(
