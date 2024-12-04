@@ -1,41 +1,63 @@
 import 'package:flutter/material.dart';
-import 'custom_bottom_navigation_bar.dart';
-import 'home_screen.dart';
-// import 'bookmark_screen.dart';
-// import 'search_screen.dart';
-// import 'profile_screen.dart';
+import 'package:bookhub/screens/home_screen.dart';
+// import 'favorite_screen.dart';
+import 'search_screen.dart';
+import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
   @override
-  _MainScreenState createState() => _MainScreenState();
+  State<MainScreen> createState() => _MainScreenState();
 }
+  class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
 
-class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0; // Melacak indeks tab yang sedang dipilih
-
-  final List<Widget> _screens = [
+  static const List<Widget> _screenOptions = <Widget>[
     HomeScreen(),
-    // BookmarkScreen(),
-    // SearchScreen(),
-    // ProfileScreen(),
+    // FavoriteScreen(),
+    SearchScreen(),
+    ProfileScreen()
   ];
+
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('My App'), // Judul aplikasi
-      ),
-      body: _screens[
-          _currentIndex], // Menampilkan layar sesuai dengan indeks saat ini
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index; // Mengubah indeks saat ini
-          });
-        },
+      body: _screenOptions.elementAt(_selectedIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bookmark),
+            label: 'Bookmark',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedItemColor: Color(0xFF233973),
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }
-}
+  }

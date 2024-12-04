@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import '/models/book.dart';
 import 'package:bookhub/data/book_data.dart';
 
+
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  static const String routeName = '/home';
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
   String _selectedCategory = 'Fantasy'; // Default selected category
 
   final List<String> categories = ['Fantasy', 'Romance', 'Mystery', 'Thriller', 'Comedy'];
@@ -29,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
         duration: Duration(milliseconds: 200),
         curve: Curves.easeInOut,
         decoration: BoxDecoration(
-          color: isSelected ? Colors.blue : Colors.white,
+          color: isSelected ? Color(0xFF233973) : Colors.white,
           borderRadius: BorderRadius.circular(6),
           boxShadow: [
             BoxShadow(
@@ -62,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Padding(
-                padding: const EdgeInsets.only(bottom: 16.0, top: 24.0),
+                padding: const EdgeInsets.only(bottom: 24.0, top: 40.0),
                 child: Text(
                   'Hello, Jonathan!',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -74,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 'Recent Opened Books',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: 16),
               Container(
                 height: 200,
                 child: ListView.builder(
@@ -159,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-
+              SizedBox(height: 16),
               // CATEGORY
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -172,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   }).toList(),
                 ),
               ),
-              SizedBox(height: 16),
+              SizedBox(height: 32),
 
               // Display filtered books based on selected category
               Text(
@@ -259,87 +262,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-
-
-      // NAVBAR
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.home),
-                SizedBox(height: 4),
-                Text(
-                  'Home',
-                  style: TextStyle(
-                    color: _currentIndex == 0 ? Colors.blue : Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.bookmark),
-                SizedBox(height: 4),
-                Text(
-                  'Bookmark',
-                  style: TextStyle(
-                    color: _currentIndex == 1 ? Colors.blue : Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.search),
-                SizedBox(height: 4),
-                Text(
-                  'Search',
-                  style: TextStyle(
-                    color: _currentIndex == 2 ? Colors.blue : Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.person),
-                SizedBox(height: 4),
-                Text(
-                  'Profile',
-                  style: TextStyle(
-                    color: _currentIndex == 3 ? Colors.blue : Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-            label: '',
-          ),
-        ],
-        currentIndex: _currentIndex,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-      ),
     );
   }
 }
-
