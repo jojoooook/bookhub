@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:bookhub/models/profile.dart'; // Pastikan untuk mengimpor model Profile
+import 'package:image_picker/image_picker.dart'; // Paket untuk memilih gambar
+import 'package:bookhub/models/profile.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final Profile profile;
@@ -15,6 +18,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _emailController;
   late TextEditingController _phoneController;
   late TextEditingController _birthdayController;
+
+  File? _profileImage; // Menyimpan gambar profil
 
   @override
   void initState() {
@@ -34,18 +39,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.dispose();
   }
 
-  // Validasi data sebelum disimpan
+  // Fungsi untuk mengambil gambar dari galeri atau kamera
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery); // Pilih dari galeri
+
+    if (image != null) {
+      setState(() {
+        _profileImage = File(image.path);
+      });
+    }
+  }
+
   void _saveProfile() {
-    if (_nameController.text.isEmpty || _emailController.text.isEmpty ||
-        _phoneController.text.isEmpty || _birthdayController.text.isEmpty) {
-      // Tampilkan pesan kesalahan jika ada field yang kosong
+    if (_nameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _phoneController.text.isEmpty ||
+        _birthdayController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('All fields must be filled out')),
       );
       return;
     }
 
-    // Update profil dengan data yang telah diubah
     Profile updatedProfile = Profile(
       name: _nameController.text,
       email: _emailController.text,
@@ -53,9 +69,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       birthday: _birthdayController.text,
     );
 
-    // Simpan data profil ke penyimpanan atau lakukan navigasi
-    Navigator.pop(context,
-        updatedProfile); // Kembali ke ProfileScreen dengan data yang sudah diubah
+    // Kembali ke ProfileScreen dengan data yang telah diubah
+    Navigator.pop(context, updatedProfile);
   }
 
   @override
@@ -64,7 +79,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       appBar: AppBar(
         title: const Text('Edit Profile'),
       ),
-      resizeToAvoidBottomInset: true, // Pastikan ini true
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -72,6 +87,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Center(
+                  child: GestureDetector(
+                    onTap: _pickImage,
+                    child: CircleAvatar(
+                      radius: 80,
+                      backgroundColor: Colors.grey[200],
+                      backgroundImage: _profileImage != null
+                          ? FileImage(_profileImage!)
+                          : AssetImage('images/avatar.png')
+                      as ImageProvider,
+                      child: _profileImage == null
+                          ? const Icon(
+                        Icons.camera_alt,
+                        size: 30,
+                        color: Colors.grey,
+                      )
+                          : null,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 TextField(
                   controller: _nameController,
                   decoration: const InputDecoration(labelText: 'Name'),
@@ -89,7 +125,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   decoration: const InputDecoration(labelText: 'Birthday'),
                 ),
                 const SizedBox(height: 20),
-
                 Center(
                   child: ElevatedButton(
                     onPressed: _saveProfile,
@@ -107,7 +142,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 100), // Memberikan ruang ekstra di bawah
+                const SizedBox(height: 100),
               ],
             ),
           ),
