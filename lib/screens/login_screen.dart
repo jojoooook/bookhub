@@ -26,7 +26,8 @@ class _LoginScreenState extends State<LoginScreen> {
       bool isSuccess = await loginUser(email, password);
 
       if (isSuccess) {
-        Navigator.pushReplacementNamed(context, '/home');
+        // Navigasi ke MainScreen dengan navbar aktif
+        Navigator.pushNamedAndRemoveUntil(context, '/main', (_) => false);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Invalid email or password')),
