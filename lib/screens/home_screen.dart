@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '/models/book.dart';
 import 'package:bookhub/data/book_data.dart';
-import 'package:bookhub/data/user_data.dart'; // Import user_data.dart
+import 'package:bookhub/data/user_data.dart';
 import 'package:bookhub/screens/detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,22 +14,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-  String _selectedCategory = 'Fantasy'; // Default selected category
-
+  String _selectedCategory = 'Fantasy';
   final List<String> categories = ['Fantasy', 'Romance', 'Mystery', 'Thriller', 'Comedy'];
+
   @override
   void initState() {
     super.initState();
-    _loadUser(); // Memuat data pengguna saat widget diinisialisasi
+    _loadUser();
   }
 
   Future<void> _loadUser() async {
-    await loadCurrentUser(); // Fungsi dari user_data.dart
-    setState(() {}); // Memperbarui state untuk menampilkan data pengguna
+    await loadCurrentUser();
+    setState(() {});
   }
+
   List<Book> get filteredBooks {
     return books.where((book) => book.genre == _selectedCategory).toList();
+  }
+
+  List<Book> get recentlyAddedBooks {
+    return books.length > 10
+        ? books.sublist(books.length - 10).reversed.toList()
+        : books.reversed.toList();
   }
 
   Widget _buildCategoryButton(String category) {
@@ -83,66 +89,38 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const Text(
-                'Recent Opened Books',
+                'Recently Added Books',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 16),
               Container(
-                height: 200,
+                height: 270,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: books.length,
+                  itemCount: recentlyAddedBooks.length,
                   itemBuilder: (context, index) {
-                    final book = books[index];
+                    final book = recentlyAddedBooks[index];
                     return GestureDetector(
                       onTap: () {
-                        // Navigasi ke DetailScreen
                         Navigator.pushNamed(
                           context,
                           DetailScreen.routeName,
-                          arguments: index, // Kirimkan index buku
+                          arguments: book,
                         );
                       },
                       child: Container(
                         width: 120,
                         margin: EdgeInsets.symmetric(horizontal: 4),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.asset(
-                                    book.imageUrl,
-                                    height: 140,
-                                    width: 120,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 8,
-                                  left: 8,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 4, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black54,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.star, size: 14, color: Colors.amber),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          '${book.rating}',
-                                          style: TextStyle(fontSize: 12, color: Colors.white),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.asset(
+                                book.imageUrl,
+                                height: 180,
+                                width: 120,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                             SizedBox(height: 4),
                             Center(
@@ -168,7 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(height: 16),
-              // CATEGORY
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -187,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 8),
               Container(
-                height: 200,
+                height: 270,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: filteredBooks.length,
@@ -195,53 +172,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     final book = filteredBooks[index];
                     return GestureDetector(
                       onTap: () {
-                        // Navigasi ke DetailScreen
                         Navigator.pushNamed(
                           context,
                           DetailScreen.routeName,
-                          arguments: index, // Kirimkan index buku
+                          arguments: book,
                         );
                       },
                       child: Container(
                         width: 120,
                         margin: EdgeInsets.symmetric(horizontal: 4),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.asset(
-                                    book.imageUrl,
-                                    height: 140,
-                                    width: 120,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                Positioned(
-                                  top: 8,
-                                  left: 8,
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 4, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black54,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(Icons.star, size: 14, color: Colors.amber),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          '${book.rating}',
-                                          style: TextStyle(fontSize: 12, color: Colors.white),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Image.asset(
+                                book.imageUrl,
+                                height: 180,
+                                width: 120,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                             SizedBox(height: 4),
                             Center(

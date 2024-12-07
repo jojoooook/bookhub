@@ -9,12 +9,11 @@ class DetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mendapatkan index buku yang dikirim melalui arguments
-    final int bookIndex = ModalRoute.of(context)!.settings.arguments as int;
-    final Book book = books[bookIndex]; // Ambil buku berdasarkan index
+    // Mendapatkan objek buku yang dikirim melalui arguments
+    final Book book = ModalRoute.of(context)!.settings.arguments as Book; // Ambil buku langsung
 
     return Scaffold(
-      backgroundColor: Colors.white, // Mengubah background menjadi putih
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -22,7 +21,6 @@ class DetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Bagian tombol back dan Gambar serta Informasi Penulis
                 Row(
                   children: [
                     IconButton(
@@ -36,7 +34,6 @@ class DetailScreen extends StatelessWidget {
                 Center(
                   child: Column(
                     children: [
-                      // Judul Buku di atas gambar
                       Text(
                         book.title,
                         style: const TextStyle(
@@ -45,16 +42,18 @@ class DetailScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      // Gambar Buku
                       Container(
                         width: 120,
                         height: 180,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Image.asset(
-                          book.imageUrl,
-                          fit: BoxFit.cover,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            book.imageUrl,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -195,7 +194,6 @@ class DetailScreen extends StatelessWidget {
         elevation: 0,
         child: Row(
           children: [
-
             Expanded(
               flex: 2,
               child: ElevatedButton(
@@ -239,9 +237,7 @@ class DetailScreen extends StatelessWidget {
           ],
         ),
       ),
-
-
-
     );
   }
 }
+

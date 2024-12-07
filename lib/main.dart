@@ -18,7 +18,7 @@ class BookHub extends StatelessWidget {
     return MaterialApp(
       title: 'BookHub',
       // Set MainScreen sebagai layar awal
-      initialRoute: LoginScreen.routeName,
+      initialRoute: MainScreen.routeName,
       routes: {
         // Define routes untuk masing-masing screen
         MainScreen.routeName: (context) => const MainScreen(),
