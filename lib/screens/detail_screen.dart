@@ -191,16 +191,19 @@ class DetailScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
+        color: Colors.white,
+        elevation: 0,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+
             Expanded(
+              flex: 2,
               child: ElevatedButton(
                 onPressed: () {
-                  // Tambahkan logika untuk bookmark
+
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13), // padding horizontal lebih kecil
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -208,18 +211,20 @@ class DetailScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Add To Bookmark',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
-            const SizedBox(width: 16), // Jarak antar tombol
+            const SizedBox(width: 8),
+
             Expanded(
+              flex: 1,
               child: ElevatedButton(
                 onPressed: () {
-                  // Tambahkan logika untuk memberi rating
+
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13), // padding horizontal lebih kecil
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
@@ -227,13 +232,16 @@ class DetailScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Give Rating',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),
             ),
           ],
         ),
       ),
+
+
+
     );
   }
 }

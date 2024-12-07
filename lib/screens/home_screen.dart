@@ -1,21 +1,33 @@
 import 'package:flutter/material.dart';
 import '/models/book.dart';
 import 'package:bookhub/data/book_data.dart';
-import 'package:bookhub/screens/detail_screen.dart';  // Import DetailScreen
+import 'package:bookhub/data/user_data.dart'; // Import user_data.dart
+import 'package:bookhub/screens/detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   static const String routeName = '/home';
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   String _selectedCategory = 'Fantasy'; // Default selected category
 
   final List<String> categories = ['Fantasy', 'Romance', 'Mystery', 'Thriller', 'Comedy'];
+  @override
+  void initState() {
+    super.initState();
+    _loadUser(); // Memuat data pengguna saat widget diinisialisasi
+  }
 
+  Future<void> _loadUser() async {
+    await loadCurrentUser(); // Fungsi dari user_data.dart
+    setState(() {}); // Memperbarui state untuk menampilkan data pengguna
+  }
   List<Book> get filteredBooks {
     return books.where((book) => book.genre == _selectedCategory).toList();
   }
@@ -63,10 +75,10 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
+              Padding(
                 padding: const EdgeInsets.only(bottom: 24.0, top: 40.0),
                 child: Text(
-                  'Hello, Jonathan!',
+                  'Hello, ${currentUser?.name ?? 'Guest'}!',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),

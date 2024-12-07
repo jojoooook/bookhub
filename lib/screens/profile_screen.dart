@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:bookhub/screens/edit_profile_screen.dart';
 import 'package:bookhub/models/profile.dart';
 import 'package:bookhub/services/profile_services.dart';
+import 'package:bookhub/data/user_data.dart'; // Untuk fungsi logout
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -12,7 +13,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // Inisialisasi profil dengan data default
   Profile profile = Profile(
     name: 'Default Name',
     email: 'default@example.com',
@@ -26,7 +26,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadProfile();
   }
 
-  // Fungsi untuk memuat profil
   Future<void> _loadProfile() async {
     Profile? loadedProfile = await ProfileService().getProfile();
     if (loadedProfile != null) {
@@ -34,6 +33,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
         profile = loadedProfile;
       });
     }
+  }
+
+  Future<void> _logout() async {
+    bool confirmLogout = await _showLogoutConfirmation();
+    if (confirmLogout) {
+      await logoutUser(); // Fungsi logout dari user_data.dart
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/login',
+            (Route<dynamic> route) => false,
+      ); // Navigasi ke LoginScreen
+    }
+  }
+
+  Future<bool> _showLogoutConfirmation() async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm Logout'),
+        content: const Text('Are you sure you want to logout?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              'Logout',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    ) ??
+        false;
   }
 
   @override
@@ -93,9 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ],
             ),
-
             const SizedBox(height: 130),
-
             // Informasi Profil
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -122,9 +155,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     value: profile.birthday,
                   ),
                   const SizedBox(height: 20),
-
                   // Tombol Edit Profil
-                  ElevatedButton(
+                  _buildButton(
+                    text: 'Edit Profile',
+                    backgroundColor: const Color(0xFF233973),
+                    textColor: Colors.white,
                     onPressed: () async {
                       final updatedProfile = await Navigator.push(
                         context,
@@ -133,30 +168,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               EditProfileScreen(profile: profile),
                         ),
                       );
-
                       if (updatedProfile != null) {
                         setState(() {
                           profile = updatedProfile;
                         });
                       }
                     },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 100, vertical: 13),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      backgroundColor: const Color(0xFF233973),
-                    ),
-                    child: const Text(
-                      'Edit Profile',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Tombol Logout
+                  _buildButton(
+                    text: 'Logout',
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    onPressed: _logout,
                   ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildButton({
+    required String text,
+    required Color backgroundColor,
+    required Color textColor,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size(double.infinity, 50), // Lebar penuh
+        padding: const EdgeInsets.symmetric(vertical: 13), // Padding konsisten
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5), // Sudut membulat
+        ),
+        backgroundColor: backgroundColor, // Warna tombol
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: textColor, // Warna teks
         ),
       ),
     );
