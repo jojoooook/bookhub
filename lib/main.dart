@@ -1,9 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:bookhub/screens/detail_screen.dart';
 import 'package:bookhub/screens/home_screen.dart';
-import 'package:bookhub/screens/main_screen.dart';
+import 'package:bookhub/screens/main_screen.dart';  // Import MainScreen
 import 'package:bookhub/screens/profile_screen.dart';
 import 'package:bookhub/screens/edit_profile_screen.dart';
 import 'package:bookhub/screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:bookhub/screens/search_screen.dart';
 
 void main() {
   runApp(BookHub());
@@ -13,12 +16,18 @@ class BookHub extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'BookHub', // Set the title of your app
-      initialRoute: LoginScreen.routeName, // Set initial route to ProfileScreen
+      title: 'BookHub',
+      // Set MainScreen sebagai layar awal
+      initialRoute: MainScreen.routeName,
       routes: {
-        '/home': (context) => HomeScreen(), // Define the route for HomeScreen
-        ProfileScreen.routeName: (context) => ProfileScreen(), // Define ProfileScreen route here
+        // Define routes untuk masing-masing screen
+        MainScreen.routeName: (context) => const MainScreen(),
         LoginScreen.routeName: (context) => LoginScreen(),
+        HomeScreen.routeName: (context) => const HomeScreen(),
+        DetailScreen.routeName: (context) => DetailScreen(), // Ganti dengan parameter yang sesuai
+        ProfileScreen.routeName: (context) => const ProfileScreen(),
+        // EditProfileScreen.routeName: (context) => const EditProfileScreen(),
+        SearchScreen.routeName: (context) => const SearchScreen(),
       },
     );
   }

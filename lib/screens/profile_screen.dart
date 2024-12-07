@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:bookhub/screens/custom_bottom_navigation_bar.dart';
 import 'package:bookhub/screens/edit_profile_screen.dart';
 import 'package:bookhub/models/profile.dart';
 import 'package:bookhub/services/profile_services.dart';
 
-
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
   static const String routeName = '/profile';
 
   @override
@@ -13,10 +12,13 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // Menambahkan variabel untuk mengontrol index bottom navigation
-  int _currentIndex = 3;
-
-  late Profile profile;
+  // Inisialisasi profil dengan data default
+  Profile profile = Profile(
+    name: 'Default Name',
+    email: 'default@example.com',
+    phoneNumber: '000-0000-0000',
+    birthday: '01-01-2000',
+  );
 
   @override
   void initState() {
@@ -24,22 +26,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadProfile();
   }
 
-  // Fungsi untuk memuat profil dari SharedPreferences
+  // Fungsi untuk memuat profil
   Future<void> _loadProfile() async {
     Profile? loadedProfile = await ProfileService().getProfile();
     if (loadedProfile != null) {
       setState(() {
         profile = loadedProfile;
-      });
-    } else {
-      setState(() {
-        // Set data default jika tidak ada data yang disimpan
-        profile = Profile(
-          name: 'Default Name',
-          email: 'default@example.com',
-          phoneNumber: '000-0000-0000',
-          birthday: '01-01-2000',
-        );
       });
     }
   }
@@ -47,12 +39,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView( // Membungkus seluruh konten dengan SingleChildScrollView
+      body: SingleChildScrollView(
         child: Column(
           children: [
-            // Profil Header
+            // Header Profil
             Stack(
-              clipBehavior: Clip.none, // Memungkinkan elemen keluar dari batas Stack
+              clipBehavior: Clip.none,
               children: [
                 Container(
                   height: 250,
@@ -84,17 +76,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 Positioned(
-                  top: 170, // Posisi ini mengatur lingkaran keluar dari bagian bawah Container
+                  top: 170,
                   left: MediaQuery.of(context).size.width / 2 - 80,
                   child: CircleAvatar(
                     radius: 80,
-                    backgroundColor: Colors.grey,
+                    backgroundColor: Colors.grey[200],
                     child: ClipOval(
                       child: Image.asset(
-                        'images/gatsby.jpeg',
+                        'images/avatar.png',
                         fit: BoxFit.cover,
-                        width: 160,
-                        height: 160,
+                        width: 200,
+                        height: 200,
                       ),
                     ),
                   ),
@@ -102,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
 
-            const SizedBox(height: 130.0),
+            const SizedBox(height: 130),
 
             // Informasi Profil
             Padding(
@@ -134,7 +126,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // Tombol Edit Profil
                   ElevatedButton(
                     onPressed: () async {
-                      // Navigasi ke halaman EditProfileScreen dan tunggu hasilnya
                       final updatedProfile = await Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -143,10 +134,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       );
 
-                      // Jika data profil berubah, update tampilan
                       if (updatedProfile != null) {
                         setState(() {
-                          profile = updatedProfile; // Update data profil
+                          profile = updatedProfile;
                         });
                       }
                     },
@@ -156,7 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      backgroundColor: Color(0xFF233973),
+                      backgroundColor: const Color(0xFF233973),
                     ),
                     child: const Text(
                       'Edit Profile',
@@ -169,31 +159,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-
-      // Menambahkan Bottom Navigation Bar
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-            if (index == 0) {
-              Navigator.pushReplacementNamed(context, '/home');
-            } else if (index == 1) {
-              // Navigate to bookmark screen (replace with your actual logic)
-            } else if (index == 2) {
-              // Navigate to search screen (replace with your actual logic)
-            } else if (index == 3) {
-              Navigator.pushReplacementNamed(
-                  context, '/profile'); // Navigate to Profile screen
-            }
-          });
-        },
-      ),
     );
   }
 }
 
-  class ProfileInfoRow extends StatelessWidget {
+class ProfileInfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;

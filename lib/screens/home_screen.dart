@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import '/models/book.dart';
 import 'package:bookhub/data/book_data.dart';
-import 'package:bookhub/screens/custom_bottom_navigation_bar.dart';
+import 'package:bookhub/screens/detail_screen.dart';  // Import DetailScreen
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   static const String routeName = '/home';
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
   String _selectedCategory = 'Fantasy'; // Default selected category
 
   final List<String> categories = ['Fantasy', 'Romance', 'Mystery', 'Thriller', 'Comedy'];
@@ -53,7 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,8 +70,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
-              // RECENT OPENED BOOKS
-
               const Text(
                 'Recent Opened Books',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -86,13 +84,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     final book = books[index];
                     return GestureDetector(
                       onTap: () {
-                        print('Tapped on ${book.title}');
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => DetailScreen(book: book),
-                        //   ),
-                        // );
+                        // Navigasi ke DetailScreen
+                        Navigator.pushNamed(
+                          context,
+                          DetailScreen.routeName,
+                          arguments: index, // Kirimkan index buku
+                        );
                       },
                       child: Container(
                         width: 120,
@@ -123,14 +120,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.star,
-                                            size: 14, color: Colors.amber),
+                                        Icon(Icons.star, size: 14, color: Colors.amber),
                                         SizedBox(width: 4),
                                         Text(
                                           '${book.rating}',
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white),
+                                          style: TextStyle(fontSize: 12, color: Colors.white),
                                         ),
                                       ],
                                     ),
@@ -167,16 +161,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: categories.map((category) {
-                    return Container(  // Menggunakan Container dengan margin
-                      margin: const EdgeInsets.symmetric(horizontal: 4.0),  // Adjust margin
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: _buildCategoryButton(category),
                     );
                   }).toList(),
                 ),
               ),
               SizedBox(height: 32),
-
-              // Display filtered books based on selected category
               Text(
                 'Books in $_selectedCategory category',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -191,7 +183,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     final book = filteredBooks[index];
                     return GestureDetector(
                       onTap: () {
-                        print('Tapped on ${book.title}');
+                        // Navigasi ke DetailScreen
+                        Navigator.pushNamed(
+                          context,
+                          DetailScreen.routeName,
+                          arguments: index, // Kirimkan index buku
+                        );
                       },
                       child: Container(
                         width: 120,
@@ -260,26 +257,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-      ),
-
-
-      // NAVBAR
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-            if (index == 0) {
-              Navigator.pushReplacementNamed(context, '/home');
-            } else if (index == 1) {
-              // Navigate to bookmark screen (replace with your actual logic)
-            } else if (index == 2) {
-              // Navigate to search screen (replace with your actual logic)
-            } else if (index == 3) {
-              Navigator.pushReplacementNamed(context, '/profile'); // Navigate to Profile screen
-            }
-          });
-        },
       ),
     );
   }
