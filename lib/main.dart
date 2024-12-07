@@ -4,6 +4,8 @@ import 'package:bookhub/screens/home_screen.dart';
 import 'package:bookhub/screens/main_screen.dart';  // Import MainScreen
 import 'package:bookhub/screens/profile_screen.dart';
 import 'package:bookhub/screens/edit_profile_screen.dart';
+import 'package:bookhub/screens/login_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:bookhub/screens/search_screen.dart';
 
 void main() {
@@ -20,6 +22,7 @@ class BookHub extends StatelessWidget {
       routes: {
         // Define routes untuk masing-masing screen
         MainScreen.routeName: (context) => const MainScreen(),
+        LoginScreen.routeName: (context) => LoginScreen(),
         HomeScreen.routeName: (context) => const HomeScreen(),
         DetailScreen.routeName: (context) => DetailScreen(), // Ganti dengan parameter yang sesuai
         ProfileScreen.routeName: (context) => const ProfileScreen(),
