@@ -85,7 +85,6 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _loadRecentSearches();
@@ -113,20 +112,20 @@ class _SearchScreenState extends State<SearchScreen> {
               _searchBook();
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Input tidak boleh kosong')),
+                SnackBar(content: Text('Input tidak boleh kosong')),
               );
             }
           },
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: Icon(Icons.search),
             onPressed: () {
               if (_searchController.text.isNotEmpty) {
                 _searchBook();
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Input tidak boleh kosong')),
+                  SnackBar(content: Text('Input tidak boleh kosong')),
                 );
               }
             },
@@ -142,7 +141,7 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Recent',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
@@ -155,7 +154,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         _recentSearches.clear();
                       });
                     },
-                    child: const Text('Clear All', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                    child: Text('Clear All', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -175,7 +174,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     },
                     child: Chip(
                       label: Text(search),
-                      deleteIcon: const Icon(Icons.close),
+                      deleteIcon: Icon(Icons.close),
                       onDeleted: () {
                         _removeRecentSearch(search);
                       },
@@ -197,7 +196,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         'Author: ${book.author} | Genre: ${book.genre}'),
                     leading: Image.asset(book.imageUrl, width: 50),
                     trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
+                      icon: Icon(Icons.delete, color: Colors.red),
                       onPressed: () {
                         _removeSearchResult(index);
                       },
@@ -212,7 +211,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   );
                 },
               )
-                  : const Center(
+                  : Center(
                 child: Text(
                   'No books found.',
                   style: TextStyle(fontSize: 18, color: Colors.grey),
