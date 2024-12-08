@@ -104,7 +104,7 @@ class DetailScreen extends StatelessWidget {
                           const Icon(Icons.star, color: Colors.amber, size: 20),
                           const SizedBox(width: 4),
                           Text(
-                            '${book.rating} ',
+                            '${book.rating}',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,

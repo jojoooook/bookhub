@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:bookhub/screens/detail_screen.dart';
 import 'package:bookhub/screens/home_screen.dart';
-import 'package:bookhub/screens/main_screen.dart'; 
+import 'package:bookhub/screens/main_screen.dart';
+import 'package:bookhub/screens/search_screen.dart';
 import 'package:bookhub/screens/profile_screen.dart';
 import 'package:bookhub/screens/edit_profile_screen.dart';
 import 'package:bookhub/screens/login_screen.dart';
@@ -10,7 +11,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 
 void main() {
-  runApp(MyApp());
+  runApp(BookHub());
 }
 
 class BookHub extends StatelessWidget {
@@ -27,7 +28,7 @@ class BookHub extends StatelessWidget {
         ProfileScreen.routeName: (context) => const ProfileScreen(),
         // EditProfileScreen.routeName: (context) => const EditProfileScreen(),
         SearchScreen.routeName: (context) => const SearchScreen(),
-        RatingScreen.routeName: (context) => const RatingScreen(),
+        RatingScreen.routeName: (context) =>  RatingScreen(),
       },
     );
   }
