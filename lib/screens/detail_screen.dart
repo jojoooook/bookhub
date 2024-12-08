@@ -26,7 +26,7 @@ class DetailScreen extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.arrow_back),
                       onPressed: () {
-                        Navigator.pushReplacementNamed(context, MainScreen.routeName);
+                        Navigator.pop(context);
                       },
                     ),
                   ],
