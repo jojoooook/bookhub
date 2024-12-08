@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '/models/book.dart';
 import '/data/book_data.dart'; // Import data buku
 import '/screens/home_screen.dart';
+import 'package:bookhub/screens/rating_screen.dart';
 
 class DetailScreen extends StatelessWidget {
   static const String routeName = '/detail';
@@ -219,7 +220,11 @@ class DetailScreen extends StatelessWidget {
               flex: 1,
               child: ElevatedButton(
                 onPressed: () {
-
+                  Navigator.pushNamed(
+                    context,
+                    RatingScreen.routeName,
+                    arguments: book, // Kirim objek buku
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
