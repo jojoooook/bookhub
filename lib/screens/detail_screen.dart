@@ -132,7 +132,7 @@ class DetailScreen extends StatelessWidget {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: '${book.pages} ',
+                            text: '${book.title} ',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -163,7 +163,7 @@ class DetailScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                book.synopsis,
+                book.title,
                 style: const TextStyle(
                   fontSize: 16,
                   height: 1.5,

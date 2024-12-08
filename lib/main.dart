@@ -1,24 +1,24 @@
 import 'package:bookhub/screens/detail_screen.dart';
 import 'package:bookhub/screens/home_screen.dart';
-import 'package:bookhub/screens/main_screen.dart';
-import 'package:bookhub/screens/profile_screen.dart';
-import 'package:bookhub/screens/search_screen.dart'; 
-import 'package:bookhub/screens/edit_profile_screen.dart';
+import 'package:bookhub/screens/rating_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 
 void main() {
-  runApp(BookHub());
+  runApp(MyApp());
 }
 
-class BookHub extends StatelessWidget {
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: MainScreen());
-    // initialRoute: HomeScreen.routeName, // Set initial route to ProfileScreen
-    // routes: {
-    //   '/home': (context) => HomeScreen(), // Define the route for HomeScreen
-    //   ProfileScreen.routeName: (context) => ProfileScreen(), // Define ProfileScreen route here
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'BookHub',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: RatingScreen(), // Panggil MainScreen dari screens/main_screen.dart
+    );
   }
 }
