@@ -1,6 +1,8 @@
 import 'package:bookhub/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bookhub/data/user_data.dart';
+import 'package:flutter/gestures.dart';
+
 
 
 class LoginScreen extends StatefulWidget {
@@ -28,7 +30,6 @@ class _LoginScreenState extends State<LoginScreen> {
       bool isSuccess = await loginUser(email, password);
 
       if (isSuccess) {
-        // Navigasi ke MainScreen dengan navbar aktif
         Navigator.pushNamedAndRemoveUntil(context, '/main', (_) => false);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -147,29 +148,29 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            // Bagian Footer
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
-              child: GestureDetector(
-                onTap: () {
-                   Navigator.pushNamed(context, RegisterScreen.routeName);
-                  // Navigasi ke halaman signup
-                },       
-                child: RichText(
-                  text: const TextSpan(
-                    text: "Don't have an account? ",
-                    style: const TextStyle(fontWeight: FontWeight.bold,
-                        color: Colors.grey),
-                    children: [
-                      const TextSpan(
-                        text: 'Sign Up',
-                        style: TextStyle(color: Color(0xFF233973)),
-                      ),
-                    ],
+              child: RichText(
+                text: TextSpan(
+                  text: "Don't have an account? ",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
                   ),
+                  children: [
+                    TextSpan(
+                      text: 'Sign Up',
+                      style: const TextStyle(color: Color(0xFF233973)),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Navigator.pushNamed(context, RegisterScreen.routeName);
+                        },
+                    ),
+                  ],
                 ),
               ),
             ),
+
           ],
         ),
       ),
