@@ -1,16 +1,15 @@
 import 'package:bookhub/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Daftar pengguna
 var userList = [
   User(name: 'Jonathan', email: 'jonathan@gmail.com', password: '123456'),
-  User(name: 'Marco', email: 'marco@gmail.com', password: '654321'),
+  User(name: 'Marco', email: 'marco@gmail.com', password: '123456'),
+  User(name: 'Yulianus', email: 'yulianus@gmail.com', password: '123456'),
+  User(name: 'Slevin', email: 'slevin@gmail.com', password: '123456'),
 ];
 
-/// Pengguna yang sedang login
 User? currentUser;
 
-/// Fungsi login
 Future<bool> loginUser(String email, String password) async {
   for (User user in userList) {
     if (user.email == email && user.password == password) {
@@ -26,7 +25,6 @@ Future<bool> loginUser(String email, String password) async {
   return false;
 }
 
-/// Fungsi untuk memuat pengguna yang login dari SharedPreferences
 Future<void> loadCurrentUser() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? email = prefs.getString('currentEmail');
@@ -44,7 +42,6 @@ Future<void> loadCurrentUser() async {
   }
 }
 
-/// Fungsi logout
 Future<void> logoutUser() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.remove('currentEmail');
