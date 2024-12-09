@@ -108,38 +108,74 @@ class _HomeScreenState extends State<HomeScreen> {
                           arguments: book,
                         );
                       },
-                      child: Container(
-                        width: 120,
-                        margin: EdgeInsets.symmetric(horizontal: 4),
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.asset(
-                                book.imageUrl,
-                                height: 180,
-                                width: 120,
-                                fit: BoxFit.cover,
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 120,
+                            margin: EdgeInsets.symmetric(horizontal: 4),
+                            child: Column(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.asset(
+                                    book.imageUrl,
+                                    height: 180,
+                                    width: 120,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Center(
+                                  child: Text(
+                                    book.title,
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                SizedBox(height: 2),
+                                Center(
+                                  child: Text(
+                                    '${book.author}',
+                                    style: TextStyle(fontSize: 12, color: Colors.grey[600], fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            top: 8,
+                            left: 8,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 4,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.star, size: 14, color: Colors.amber),
+                                  SizedBox(width: 2),
+                                  Text(
+                                    '${book.rating}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 4),
-                            Center(
-                              child: Text(
-                                book.title,
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            SizedBox(height: 2),
-                            Center(
-                              child: Text(
-                                '${book.author}',
-                                style: TextStyle(fontSize: 12),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -178,38 +214,74 @@ class _HomeScreenState extends State<HomeScreen> {
                           arguments: book,
                         );
                       },
-                      child: Container(
-                        width: 120,
-                        margin: EdgeInsets.symmetric(horizontal: 4),
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.asset(
-                                book.imageUrl,
-                                height: 180,
-                                width: 120,
-                                fit: BoxFit.cover,
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 120,
+                            margin: EdgeInsets.symmetric(horizontal: 4),
+                            child: Column(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.asset(
+                                    book.imageUrl,
+                                    height: 180,
+                                    width: 120,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Center(
+                                  child: Text(
+                                    book.title,
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                SizedBox(height: 2),
+                                Center(
+                                  child: Text(
+                                    '${book.author}',
+                                    style: TextStyle(fontSize: 12, color: Colors.grey[600], fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            top: 8,
+                            left: 8,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 4,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.star, size: 14, color: Colors.amber),
+                                  SizedBox(width: 2),
+                                  Text(
+                                    '${book.rating}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(height: 4),
-                            Center(
-                              child: Text(
-                                book.title,
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            SizedBox(height: 2),
-                            Center(
-                              child: Text(
-                                '${book.author}',
-                                style: TextStyle(fontSize: 12),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },

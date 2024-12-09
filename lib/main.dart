@@ -20,6 +20,7 @@ class BookHub extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'BookHub',
+      theme: ThemeData(fontFamily: 'Poppins',),
       initialRoute: RegisterScreen.routeName,
       routes: {
         MainScreen.routeName: (context) => const MainScreen(),
@@ -27,7 +28,6 @@ class BookHub extends StatelessWidget {
         HomeScreen.routeName: (context) => const HomeScreen(),
         DetailScreen.routeName: (context) => DetailScreen(),
         ProfileScreen.routeName: (context) => const ProfileScreen(),
-        // EditProfileScreen.routeName: (context) => const EditProfileScreen(),
         SearchScreen.routeName: (context) => const SearchScreen(),
         RatingScreen.routeName: (context) =>  RatingScreen(),
         RegisterScreen.routeName: (context) =>  RegisterScreen(),

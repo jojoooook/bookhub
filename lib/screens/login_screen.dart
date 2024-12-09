@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               labelText: 'Password',
                               prefixIcon: const Icon(Icons.lock),
                               suffixText: 'FORGOT',
-                              suffixStyle: const TextStyle(color: Color(0xFF233973)),
+                              suffixStyle: const TextStyle(color: Color(0xFF233973), fontWeight: FontWeight.bold),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -139,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             child: _isLoading
                                 ? const CircularProgressIndicator(color: Colors.white)
-                                : const Text('LOGIN', style: TextStyle(fontSize: 16, color: Colors.white)),
+                                : const Text('LOGIN', style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ),
@@ -160,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     TextSpan(
                       text: 'Sign Up',
-                      style: const TextStyle(color: Color(0xFF233973)),
+                      style: const TextStyle(color: Color(0xFF233973), fontWeight: FontWeight.bold ),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
                           Navigator.pushNamed(context, RegisterScreen.routeName);

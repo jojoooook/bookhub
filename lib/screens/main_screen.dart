@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'login_screen.dart';
+
 // import 'bookmark_screen.dart';
 // import 'search_screen.dart';
 // import 'profile_screen.dart';
 import 'package:bookhub/screens/home_screen.dart';
+
 // import 'favorite_screen.dart';
 import 'search_screen.dart';
 import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
+
   static const String routeName = '/main';
+
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
-  class _MainScreenState extends State<MainScreen> {
+
+class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   static const List<Widget> _screenOptions = <Widget>[
@@ -24,7 +29,6 @@ class MainScreen extends StatefulWidget {
     SearchScreen(),
     ProfileScreen()
   ];
-
 
   void _onItemTapped(int index) {
     setState(() {
@@ -62,7 +66,13 @@ class MainScreen extends StatefulWidget {
         selectedItemColor: Color(0xFF233973),
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
+        selectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.bold,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.normal,
+        ),
       ),
     );
   }
-  }
+}

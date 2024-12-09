@@ -63,9 +63,9 @@ class DetailScreen extends StatelessWidget {
                         'Author: ${book.author}',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       // Tanggal Publikasi Buku
@@ -73,19 +73,18 @@ class DetailScreen extends StatelessWidget {
                         'Published on: ${book.date}',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                           ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Box untuk rating, genre, pages dengan warna abu-abu
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50], // Warna abu-abu
+                    color: Colors.grey[50],
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: [
                       BoxShadow(
@@ -99,7 +98,6 @@ class DetailScreen extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      // Rating bintang
                       Row(
                         children: [
                           const Icon(Icons.star, color: Colors.amber, size: 20),
@@ -210,7 +208,7 @@ class DetailScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Add To Bookmark',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -223,7 +221,7 @@ class DetailScreen extends StatelessWidget {
                   Navigator.pushNamed(
                     context,
                     RatingScreen.routeName,
-                    arguments: book, // Kirim objek buku
+                    arguments: book,
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -235,7 +233,7 @@ class DetailScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Give Rating',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
+                  style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),

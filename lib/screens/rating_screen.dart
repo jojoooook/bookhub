@@ -78,6 +78,7 @@ class _RatingScreenState extends State<RatingScreen> {
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.grey,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -86,6 +87,7 @@ class _RatingScreenState extends State<RatingScreen> {
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.grey,
+                            fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
@@ -164,6 +166,7 @@ class _RatingScreenState extends State<RatingScreen> {
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey[600],
+                                fontWeight: FontWeight.bold
                               ),
                             ),
                           ],
@@ -173,11 +176,13 @@ class _RatingScreenState extends State<RatingScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
-                  'Give your rating:',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                const Center(
+                  child: Text(
+                    'Give your rating:',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -250,7 +255,7 @@ class _RatingScreenState extends State<RatingScreen> {
                     ),
                     child: const Text(
                       'Submit',
-                      style: TextStyle(fontSize: 16, color: Colors.white),
+                      style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
