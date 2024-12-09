@@ -1,5 +1,7 @@
+import 'package:bookhub/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bookhub/data/user_data.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -150,8 +152,9 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.symmetric(vertical: 16.0),
               child: GestureDetector(
                 onTap: () {
+                   Navigator.pushNamed(context, RegisterScreen.routeName);
                   // Navigasi ke halaman signup
-                },
+                },       
                 child: RichText(
                   text: const TextSpan(
                     text: "Don't have an account? ",
