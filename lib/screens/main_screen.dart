@@ -7,7 +7,7 @@ import 'login_screen.dart';
 // import 'profile_screen.dart';
 import 'package:bookhub/screens/home_screen.dart';
 
-// import 'favorite_screen.dart';
+import 'favorite_screen.dart';
 import 'search_screen.dart';
 import 'profile_screen.dart';
 
@@ -25,7 +25,7 @@ class _MainScreenState extends State<MainScreen> {
 
   static const List<Widget> _screenOptions = <Widget>[
     HomeScreen(),
-    // FavoriteScreen(),
+    FavoriteScreen(),
     SearchScreen(),
     ProfileScreen()
   ];
@@ -48,7 +48,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bookmark),
-            label: 'Bookmark',
+            label: 'BookMark',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),

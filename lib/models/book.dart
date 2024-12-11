@@ -22,22 +22,31 @@ class Book {
     required this.synopsis,
     required this.date,
   });
-  String toJson() {
-    return '{"title": "$title", "author": "$author", "genre": "$genre", "imageUrl": "$imageUrl"}';
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'author': author,
+      'imageUrl': imageUrl,
+      'synopsis': synopsis,
+      'genre': genre,
+      'date': date,
+      'pages': pages,
+      'rating': rating,
+    };
   }
+  
 
   // Konversi dari JSON
-  factory Book.fromJson(String json) {
-    final Map<String, dynamic> data = jsonDecode(json);
+  factory Book.fromJson(Map<String, dynamic> json) {
     return Book(
-      title: data['title'],
-      author: data['author'],
-      genre: data['genre'],
-      imageUrl: data['imageUrl'], 
-      rating: data['rating'],
-      pages: data['pages'],
-      synopsis: data['synopsis'],
-      date: data['date']
+      title: json['title'],
+      author: json['author'],
+      imageUrl: json['imageUrl'],
+      synopsis: json['synopsis'],
+      genre: json['genre'],
+      date: json['date'],
+      pages: json['pages'],
+      rating: json['rating'].toDouble(),
     );
   }
 }
