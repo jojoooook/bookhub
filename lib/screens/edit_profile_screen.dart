@@ -130,7 +130,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     onPressed: _saveProfile,
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 100, vertical: 13),
+                          horizontal: 90, vertical: 13),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),
                       ),
@@ -138,7 +138,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     child: const Text(
                       'Save Changes',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                      style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
