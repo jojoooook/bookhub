@@ -75,19 +75,19 @@ class _RatingScreenState extends State<RatingScreen> {
                       const SizedBox(height: 16),
                       Text(
                         'Author: ${book.author}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Published on: ${book.date}',
-                        style: const TextStyle(
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey,
-                            fontWeight: FontWeight.bold,
+                          color: Colors.grey[600],
                         ),
                       ),
                     ],

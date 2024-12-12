@@ -46,9 +46,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Teks "Bookmarks" berada di tengah atas
             Padding(
-              padding: const EdgeInsets.only(top: 40.0, bottom: 24.0),
+              padding: const EdgeInsets.only(top: 20.0, bottom: 24.0),
               child: Center(
                 child: Text(
                   'Bookmarks',
