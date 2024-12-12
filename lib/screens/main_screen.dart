@@ -48,7 +48,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.bookmark),
-            label: 'BookMark',
+            label: 'Bookmark',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
