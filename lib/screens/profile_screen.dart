@@ -27,13 +27,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadProfile() async {
-    Profile? loadedProfile = await ProfileService().getProfile();
-    if (loadedProfile != null) {
+    await loadCurrentUser();
+
+    if (currentUser != null) {
       setState(() {
-        profile = loadedProfile;
+        profile = Profile(
+          name: currentUser!.name,
+          email: currentUser!.email,
+          phoneNumber: '0800-0000-0000',
+          birthday: '01-01-2004',
+        );
       });
     }
   }
+
 
   Future<void> _logout() async {
     bool confirmLogout = await _showLogoutConfirmation();

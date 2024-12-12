@@ -24,7 +24,7 @@ class BookHub extends StatelessWidget {
     return MaterialApp(
       title: 'BookHub',
       theme: ThemeData(fontFamily: 'Poppins',),
-      initialRoute: RegisterScreen.routeName,
+      initialRoute: LoginScreen.routeName,
       routes: {
         MainScreen.routeName: (context) => const MainScreen(),
         LoginScreen.routeName: (context) => LoginScreen(),
