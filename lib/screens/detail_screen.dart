@@ -19,7 +19,7 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  bool isBookmarked = false; // Menyimpan status bookmark
+  bool isBookmarked = false;
 
 
   Future<void> _loadBookmarkedBooks() async {
@@ -27,7 +27,7 @@ class _DetailScreenState extends State<DetailScreen> {
   List<String>? books = prefs.getStringList('bookmarkedBooks');
   if (books != null) {
     setState(() {
-      isBookmarked = books.contains(widget.book.title);
+      isBookmarked = books.contains(jsonEncode(widget.book.toJson()));
     });
   }
   }
@@ -35,14 +35,13 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   void initState() {
     super.initState();
-    _loadBookmarkedBooks(); // Load bookmark saat widget diinisialisasi
+    _loadBookmarkedBooks();
   }
 
 
 
   @override
   Widget build(BuildContext context) {
-    // Mendapatkan objek buku yang dikirim melalui arguments
     final Book book = ModalRoute.of(context)!.settings.arguments as Book; // Ambil buku langsung
     return Scaffold(
       backgroundColor: Colors.white,
@@ -89,7 +88,6 @@ class _DetailScreenState extends State<DetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      // Penulis Buku
                       Text(
                         'Author: ${book.author}',
                         textAlign: TextAlign.center,
@@ -99,7 +97,6 @@ class _DetailScreenState extends State<DetailScreen> {
                             fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
-                      // Tanggal Publikasi Buku
                       Text(
                         'Published on: ${book.date}',
                         textAlign: TextAlign.center,
@@ -150,13 +147,11 @@ class _DetailScreenState extends State<DetailScreen> {
                           ),
                         ],
                       ),
-                      // Garis pemisah
                       Container(
                         height: 24,
                         width: 1,
                         color: Colors.grey[300],
                       ),
-                      // Genre
                       Text(
                         book.genre,
                         style: const TextStyle(
@@ -165,13 +160,11 @@ class _DetailScreenState extends State<DetailScreen> {
                           color: Colors.black,
                         ),
                       ),
-                      // Garis pemisah
                       Container(
                         height: 24,
                         width: 1,
                         color: Colors.grey[300],
                       ),
-                      // Jumlah halaman
                       RichText(
                         text: TextSpan(
                           children: [
@@ -198,7 +191,6 @@ class _DetailScreenState extends State<DetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Sinopsis
                 const Text(
                   'Synopsis',
                   style: TextStyle(
@@ -234,14 +226,12 @@ class _DetailScreenState extends State<DetailScreen> {
 
                   setState(() {
                     if (isBookmarked) {
-                      // Hapus buku dari bookmark
                       bookmarkedBooks.removeWhere((book) =>
                           Book.fromJson(jsonDecode(book)).title == widget.book.title);
                       isBookmarked = false;
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('${widget.book.title} removed from bookmark')));
                     } else {
-                      // Tambahkan buku ke bookmark
                       bookmarkedBooks.add(jsonEncode(widget.book.toJson()));
                       isBookmarked = true;
                       ScaffoldMessenger.of(context).showSnackBar(
