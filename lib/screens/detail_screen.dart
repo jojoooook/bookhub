@@ -1,18 +1,49 @@
+import 'package:bookhub/screens/favorite_screen.dart';
 import 'package:bookhub/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import '/models/book.dart';
 import '/data/book_data.dart'; // Import data buku
 import '/screens/home_screen.dart';
 import 'package:bookhub/screens/rating_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-class DetailScreen extends StatelessWidget {
+class DetailScreen extends StatefulWidget {
   static const String routeName = '/detail';
+  final Book book;
+  const DetailScreen({super.key, required this.book});
+
+  @override
+  State<DetailScreen> createState() => _DetailScreenState();
+ 
+}
+
+class _DetailScreenState extends State<DetailScreen> {
+  bool isBookmarked = false; // Menyimpan status bookmark
+
+
+  Future<void> _loadBookmarkedBooks() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  List<String>? books = prefs.getStringList('bookmarkedBooks');
+  if (books != null) {
+    setState(() {
+      isBookmarked = books.contains(widget.book.title);
+    });
+  }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBookmarkedBooks(); // Load bookmark saat widget diinisialisasi
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
     // Mendapatkan objek buku yang dikirim melalui arguments
     final Book book = ModalRoute.of(context)!.settings.arguments as Book; // Ambil buku langsung
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -75,7 +106,7 @@ class DetailScreen extends StatelessWidget {
                         style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],
-                           ),
+                        ),
                       ),
                     ],
                   ),
@@ -196,24 +227,45 @@ class DetailScreen extends StatelessWidget {
             Expanded(
               flex: 2,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  List<String> bookmarkedBooks =
+                      prefs.getStringList("bookmarkedBooks") ?? [];
 
+                  setState(() {
+                    if (isBookmarked) {
+                      // Hapus buku dari bookmark
+                      bookmarkedBooks.removeWhere((book) =>
+                          Book.fromJson(jsonDecode(book)).title == widget.book.title);
+                      isBookmarked = false;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('${widget.book.title} removed from bookmark')));
+                    } else {
+                      // Tambahkan buku ke bookmark
+                      bookmarkedBooks.add(jsonEncode(widget.book.toJson()));
+                      isBookmarked = true;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('${widget.book.title} added to bookmark')));
+                    }
+                  });
+
+                  await prefs.setStringList("bookmarkedBooks", bookmarkedBooks);
                 },
+
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  backgroundColor: const Color(0xFF233973),
+                  backgroundColor: isBookmarked ? Colors.red : const Color(0xFF233973),
                 ),
-                child: const Text(
-                  'Add To Bookmark',
-                  style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+                child: Text(
+                  isBookmarked ? 'Remove From Bookmark' : 'Add To Bookmark',
+                  style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
             const SizedBox(width: 8),
-
             Expanded(
               flex: 1,
               child: ElevatedButton(
@@ -243,4 +295,5 @@ class DetailScreen extends StatelessWidget {
     );
   }
 }
+
 
