@@ -130,6 +130,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     book.title,
                                     style: TextStyle(fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
+                                    maxLines: 2, // Batasi maksimal 2 baris
+                                    overflow: TextOverflow.ellipsis, // Tambahkan elipsis jika terlalu panjang
                                   ),
                                 ),
                                 SizedBox(height: 2),
@@ -231,24 +233,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 SizedBox(height: 4),
-                                Center(
-                                  child: Text(
-                                    book.title,
-                                    style: TextStyle(fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center,
+                                Text(
+                                  book.title,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14, // Ukuran font lebih kecil
                                   ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 2, // Batas 2 baris
+                                  overflow: TextOverflow.ellipsis, // Potong teks dengan elipsis
                                 ),
                                 SizedBox(height: 2),
-                                Center(
-                                  child: Text(
-                                    '${book.author}',
-                                    style: TextStyle(fontSize: 12, color: Colors.grey[600], fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center,
+                                Text(
+                                  '${book.author}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                    fontWeight: FontWeight.bold,
                                   ),
+                                  textAlign: TextAlign.center,
                                 ),
                               ],
                             ),
                           ),
+
                           Positioned(
                             top: 8,
                             left: 8,
