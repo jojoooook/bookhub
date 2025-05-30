@@ -11,23 +11,26 @@ dependencies:
     sdk: flutter
   shared_preferences: ^2.0.16
   image_picker: ^0.8.7+4
-  flutter_native_splash: ^2.3.0
+  # flutter_native_splash: ^2.3.0
   flutter_launcher_icons: ^0.14.1
   flutter_rating_bar: ^4.0.0
-
+  firebase_core: ^2.27.0
+  firebase_auth: ^4.17.0
+  cloud_firestore: ^4.8.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  js: ^0.6.7
 
-flutter_native_splash:
-  color: "#FFFFFF" # Warna latar belakang
-  image: images/splash.png # Gambar logo
-  android: true
-  ios: true
-  web: true
-  fullscreen: true
+# flutter_native_splash:
+#   color: "#FFFFFF" # Warna latar belakang
+#   image: images/splash.png # Gambar logo
+#   android: true
+#   ios: true
+#   web: true
+#   fullscreen: true
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -44,5 +47,5 @@ flutter:
   fonts:
     - family: Poppins
       fonts:
-      - asset: fonts/Poppins-Regular.ttf
-      - asset: fonts/Poppins-SemiBold.ttf
+        - asset: fonts/Poppins-Regular.ttf
+        - asset: fonts/Poppins-SemiBold.ttf

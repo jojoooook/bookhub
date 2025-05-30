@@ -1,9 +1,7 @@
 import 'package:bookhub/screens/register_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:bookhub/data/user_data.dart';
+import 'package:bookhub/services/auth_service.dart';
 import 'package:flutter/gestures.dart';
-
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,23 +15,29 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _isLoading = false;
+  final AuthService _authService = AuthService();
 
   Future<void> _login() async {
-    String email = emailController.text;
-    String password = passwordController.text;
+    String email = emailController.text.trim();
+    String password = passwordController.text.trim();
 
     setState(() {
       _isLoading = true;
     });
 
     if (email.isNotEmpty && password.isNotEmpty) {
-      bool isSuccess = await loginUser(email, password);
-
-      if (isSuccess) {
-        Navigator.pushNamedAndRemoveUntil(context, '/main', (_) => false);
-      } else {
+      try {
+        final user = await _authService.signIn(email, password);
+        if (user != null) {
+          Navigator.pushNamedAndRemoveUntil(context, '/main', (_) => false);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invalid email or password')),
+          );
+        }
+      } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid email or password')),
+          SnackBar(content: Text('Login failed: $e')),
         );
       }
     } else {
@@ -100,7 +104,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           Text(
                             'Please sign in to continue',
-                            style: TextStyle(fontWeight: FontWeight.bold,color: Colors.grey[600]),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[600]),
                           ),
                           const SizedBox(height: 24),
                           TextField(
@@ -121,7 +127,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               labelText: 'Password',
                               prefixIcon: const Icon(Icons.lock),
                               suffixText: 'FORGOT',
-                              suffixStyle: const TextStyle(color: Color(0xFF233973), fontWeight: FontWeight.bold),
+                              suffixStyle: const TextStyle(
+                                  color: Color(0xFF233973),
+                                  fontWeight: FontWeight.bold),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -138,8 +146,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             child: _isLoading
-                                ? const CircularProgressIndicator(color: Colors.white)
-                                : const Text('LOGIN', style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold)),
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white)
+                                : const Text('LOGIN',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold)),
                           ),
                         ],
                       ),
@@ -160,17 +173,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     TextSpan(
                       text: 'Sign Up',
-                      style: const TextStyle(color: Color(0xFF233973), fontWeight: FontWeight.bold ),
+                      style: const TextStyle(
+                          color: Color(0xFF233973),
+                          fontWeight: FontWeight.bold),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          Navigator.pushNamed(context, RegisterScreen.routeName);
+                          Navigator.pushNamed(
+                              context, RegisterScreen.routeName);
                         },
                     ),
                   ],
                 ),
               ),
             ),
-
           ],
         ),
       ),

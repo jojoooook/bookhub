@@ -3,6 +3,7 @@ import 'package:bookhub/screens/edit_profile_screen.dart';
 import 'package:bookhub/models/profile.dart';
 import 'package:bookhub/services/profile_services.dart';
 import 'package:bookhub/data/user_data.dart'; // Untuk fungsi logout
+import 'package:bookhub/services/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -27,20 +28,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadProfile() async {
-    await loadCurrentUser();
-
-    if (currentUser != null) {
-      setState(() {
-        profile = Profile(
-          name: currentUser!.name,
-          email: currentUser!.email,
-          phoneNumber: '0800-0000-0000',
-          birthday: '01-01-2004',
-        );
-      });
+    final authService = AuthService();
+    final firebaseUser = authService.currentUser;
+    if (firebaseUser != null) {
+      final userData = await authService.fetchUserProfile(firebaseUser.uid);
+      if (userData != null) {
+        setState(() {
+          profile = Profile(
+            name: userData['name'] ?? 'No Name',
+            email: firebaseUser.email ?? 'No Email',
+            phoneNumber: userData['phone'] ?? 'No Phone',
+            birthday: userData['birthday'] ?? 'No Birthday',
+          );
+        });
+      }
     }
   }
-
 
   Future<void> _logout() async {
     bool confirmLogout = await _showLogoutConfirmation();
@@ -49,32 +52,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
       Navigator.pushNamedAndRemoveUntil(
         context,
         '/login',
-            (Route<dynamic> route) => false,
+        (Route<dynamic> route) => false,
       ); // Navigasi ke LoginScreen
     }
   }
 
   Future<bool> _showLogoutConfirmation() async {
     return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirm Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Confirm Logout'),
+            content: const Text('Are you sure you want to logout?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text(
+                  'Logout',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'Logout',
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
-    ) ??
+        ) ??
         false;
   }
 
@@ -233,11 +236,11 @@ class ProfileInfoRow extends StatelessWidget {
   final String value;
 
   const ProfileInfoRow({
-    Key? key,
+    super.key,
     required this.icon,
     required this.label,
     required this.value,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

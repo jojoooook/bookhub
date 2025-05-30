@@ -34,7 +34,6 @@ class Book {
       'rating': rating,
     };
   }
-  
 
   // Konversi dari JSON
   factory Book.fromJson(Map<String, dynamic> json) {

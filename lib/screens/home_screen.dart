@@ -3,6 +3,7 @@ import '/models/book.dart';
 import 'package:bookhub/data/book_data.dart';
 import 'package:bookhub/data/user_data.dart';
 import 'package:bookhub/screens/detail_screen.dart';
+import 'package:bookhub/services/auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,7 +16,15 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String _selectedCategory = 'Fantasy';
-  final List<String> categories = ['Fantasy', 'Romance', 'Mystery', 'Thriller', 'Comedy'];
+  final List<String> categories = [
+    'Fantasy',
+    'Romance',
+    'Mystery',
+    'Thriller',
+    'Comedy'
+  ];
+
+  String? userName;
 
   @override
   void initState() {
@@ -24,8 +33,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadUser() async {
-    await loadCurrentUser();
-    setState(() {});
+    final authService = AuthService();
+    final firebaseUser = authService.currentUser;
+    if (firebaseUser != null) {
+      final userData = await authService.fetchUserProfile(firebaseUser.uid);
+      print('Fetched userData: $userData'); // Debug print
+      setState(() {
+        userName = userData?['name'] ?? firebaseUser.email ?? 'Guest';
+      });
+      print('Set userName: $userName'); // Debug print
+    } else {
+      setState(() {
+        userName = 'Guest';
+      });
+      print('No firebase user, set userName to Guest'); // Debug print
+    }
   }
 
   List<Book> get filteredBooks {
@@ -84,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 24.0, top: 40.0),
                 child: Text(
-                  'Hello, ${currentUser?.name ?? 'Guest'}!',
+                  'Hello, ${userName ?? 'Guest'}!',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -128,17 +150,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Center(
                                   child: Text(
                                     book.title,
-                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
                                     maxLines: 2, // Batasi maksimal 2 baris
-                                    overflow: TextOverflow.ellipsis, // Tambahkan elipsis jika terlalu panjang
+                                    overflow: TextOverflow
+                                        .ellipsis, // Tambahkan elipsis jika terlalu panjang
                                   ),
                                 ),
                                 SizedBox(height: 2),
                                 Center(
                                   child: Text(
                                     '${book.author}',
-                                    style: TextStyle(fontSize: 12, color: Colors.grey[600], fontWeight: FontWeight.bold),
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                        fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -149,7 +176,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             top: 8,
                             left: 8,
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(8),
@@ -163,7 +191,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.star, size: 14, color: Colors.amber),
+                                  Icon(Icons.star,
+                                      size: 14, color: Colors.amber),
                                   SizedBox(width: 2),
                                   Text(
                                     '${book.rating}',
@@ -241,7 +270,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   textAlign: TextAlign.center,
                                   maxLines: 2, // Batas 2 baris
-                                  overflow: TextOverflow.ellipsis, // Potong teks dengan elipsis
+                                  overflow: TextOverflow
+                                      .ellipsis, // Potong teks dengan elipsis
                                 ),
                                 SizedBox(height: 2),
                                 Text(
@@ -256,12 +286,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-
                           Positioned(
                             top: 8,
                             left: 8,
                             child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(8),
@@ -275,7 +305,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.star, size: 14, color: Colors.amber),
+                                  Icon(Icons.star,
+                                      size: 14, color: Colors.amber),
                                   SizedBox(width: 2),
                                   Text(
                                     '${book.rating}',

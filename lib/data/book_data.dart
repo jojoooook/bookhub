@@ -243,16 +243,15 @@ final List<Book> books = [
     date: "19 November 2024",
   ),
   Book(
-    title: "Pictures of You",
-    author: "Emma Grey",
-    imageUrl: "images/book_images/picturesOfYou.jpg",
-    genre: "Romance",
-    rating: 4.15,
-    pages: "416",
-    synopsis:
-        "When Evie Hudson wakes in an unfamiliar hospital room, she thinks she’s fresh out of a teenage party with her best friend, Bree. Except, Bree isn’t around anymore and high school was years ago.",
-    date:"12 November 2024"
-  ),
+      title: "Pictures of You",
+      author: "Emma Grey",
+      imageUrl: "images/book_images/picturesOfYou.jpg",
+      genre: "Romance",
+      rating: 4.15,
+      pages: "416",
+      synopsis:
+          "When Evie Hudson wakes in an unfamiliar hospital room, she thinks she’s fresh out of a teenage party with her best friend, Bree. Except, Bree isn’t around anymore and high school was years ago.",
+      date: "12 November 2024"),
   Book(
       title: "The Book of George",
       author: "Kate Greathead",
@@ -261,9 +260,8 @@ final List<Book> books = [
       rating: 3.46,
       pages: "288",
       synopsis:
-      "If you haven’t had the misfortune of dating a George, you know someone who has. He’s a young man brimming with potential but incapable of following through; noncommittal to his long-suffering girlfriend, Jenny; distant from but still reliant on his mother; funny one minute, sullenly brooding the next. ",
-      date:"8 October 2024"
-  ),
+          "If you haven’t had the misfortune of dating a George, you know someone who has. He’s a young man brimming with potential but incapable of following through; noncommittal to his long-suffering girlfriend, Jenny; distant from but still reliant on his mother; funny one minute, sullenly brooding the next. ",
+      date: "8 October 2024"),
   Book(
       title: "Blood Test: A Comedy",
       author: "Charles Baxter",
@@ -272,9 +270,8 @@ final List<Book> books = [
       rating: 3.24,
       pages: "224",
       synopsis:
-      "In this fresh take on love and trouble in America, Brock Hobson, an insurance salesman and Sunday-school teacher, finds his equilibrium disturbed by the results of a predictive blood test.",
-      date:"15 October 2024"
-  ),
+          "In this fresh take on love and trouble in America, Brock Hobson, an insurance salesman and Sunday-school teacher, finds his equilibrium disturbed by the results of a predictive blood test.",
+      date: "15 October 2024"),
   Book(
       title: "Pony Confidential",
       author: "Christina Lynch",
@@ -283,7 +280,6 @@ final List<Book> books = [
       rating: 4.17,
       pages: "384",
       synopsis:
-      "Pony has been passed from owner to owner for longer than he can remember. Fed up, he busts out and goes on a cross-country mission to reunite with the only little girl he ever loved, Penny, who he was separated from and hasn’t seen in years.",
-      date:"5 November 2024"
-  ),
+          "Pony has been passed from owner to owner for longer than he can remember. Fed up, he busts out and goes on a cross-country mission to reunite with the only little girl he ever loved, Penny, who he was separated from and hasn’t seen in years.",
+      date: "5 November 2024"),
 ];
