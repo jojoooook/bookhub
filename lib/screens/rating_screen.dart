@@ -5,6 +5,8 @@ import '/models/book.dart';
 class RatingScreen extends StatefulWidget {
   static const String routeName = '/rating';
 
+  const RatingScreen({super.key});
+
   @override
   _RatingScreenState createState() => _RatingScreenState();
 }

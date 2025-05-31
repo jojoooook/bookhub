@@ -17,7 +17,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Profile profile = Profile(
     name: 'Default Name',
     email: 'default@example.com',
-    phoneNumber: '000-0000-0000',
+    phone: '000-0000-0000',
     birthday: '01-01-2000',
   );
 
@@ -37,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           profile = Profile(
             name: userData['name'] ?? 'No Name',
             email: firebaseUser.email ?? 'No Email',
-            phoneNumber: userData['phone'] ?? 'No Phone',
+            phone: userData['phone'] ?? 'No Phone',
             birthday: userData['birthday'] ?? 'No Birthday',
           );
         });
@@ -157,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ProfileInfoRow(
                     icon: Icons.phone,
                     label: 'Phone Number',
-                    value: profile.phoneNumber,
+                    value: profile.phone,
                   ),
                   ProfileInfoRow(
                     icon: Icons.cake,

@@ -1,12 +1,7 @@
-import 'package:bookhub/screens/favorite_screen.dart';
-import 'package:bookhub/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import '/models/book.dart';
-import '/data/book_data.dart'; // Import data buku
-import '/screens/home_screen.dart';
 import 'package:bookhub/screens/rating_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
+import 'package:bookhub/services/book_service.dart';
 
 class DetailScreen extends StatefulWidget {
   static const String routeName = '/detail';
@@ -15,34 +10,28 @@ class DetailScreen extends StatefulWidget {
 
   @override
   State<DetailScreen> createState() => _DetailScreenState();
- 
 }
 
 class _DetailScreenState extends State<DetailScreen> {
   bool isBookmarked = false;
+  final BookService _bookService = BookService();
 
-
-  Future<void> _loadBookmarkedBooks() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  List<String>? books = prefs.getStringList('bookmarkedBooks');
-  if (books != null) {
+  Future<void> _loadBookmarkedStatus() async {
+    final isFavorite = await _bookService.isBookFavorite(widget.book.id);
     setState(() {
-      isBookmarked = books.contains(jsonEncode(widget.book.toJson()));
+      isBookmarked = isFavorite;
     });
-  }
   }
 
   @override
   void initState() {
     super.initState();
-    _loadBookmarkedBooks();
+    _loadBookmarkedStatus();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
-    final Book book = ModalRoute.of(context)!.settings.arguments as Book; // Ambil buku langsung
+    final Book book = ModalRoute.of(context)!.settings.arguments as Book;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -101,8 +90,8 @@ class _DetailScreenState extends State<DetailScreen> {
                         'Published on: ${book.date}',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
+                          fontSize: 14,
+                          color: Colors.grey[600],
                         ),
                       ),
                     ],
@@ -179,7 +168,7 @@ class _DetailScreenState extends State<DetailScreen> {
                             TextSpan(
                               text: 'Pages',
                               style: TextStyle(
-                                fontSize:  14,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey[600],
                               ),
@@ -220,38 +209,51 @@ class _DetailScreenState extends State<DetailScreen> {
               flex: 2,
               child: ElevatedButton(
                 onPressed: () async {
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  List<String> bookmarkedBooks =
-                      prefs.getStringList("bookmarkedBooks") ?? [];
+                  try {
+                    setState(() {
+                      isBookmarked = !isBookmarked;
+                    });
 
-                  setState(() {
                     if (isBookmarked) {
-                      bookmarkedBooks.removeWhere((book) =>
-                          Book.fromJson(jsonDecode(book)).title == widget.book.title);
-                      isBookmarked = false;
+                      await _bookService.addToFavorites(widget.book.id);
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('${widget.book.title} removed from bookmark')));
+                        SnackBar(
+                            content: Text(
+                                '${widget.book.title} added to favorites')),
+                      );
                     } else {
-                      bookmarkedBooks.add(jsonEncode(widget.book.toJson()));
-                      isBookmarked = true;
+                      await _bookService.removeFromFavorites(widget.book.id);
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('${widget.book.title} added to bookmark')));
+                        SnackBar(
+                            content: Text(
+                                '${widget.book.title} removed from favorites')),
+                      );
                     }
-                  });
-
-                  await prefs.setStringList("bookmarkedBooks", bookmarkedBooks);
+                  } catch (e) {
+                    setState(() {
+                      isBookmarked =
+                          !isBookmarked; // Revert state if operation fails
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Failed to update favorites')),
+                    );
+                  }
                 },
-
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5),
                   ),
-                  backgroundColor: isBookmarked ? Colors.red : const Color(0xFF233973),
+                  backgroundColor:
+                      isBookmarked ? Colors.red : const Color(0xFF233973),
                 ),
                 child: Text(
-                  isBookmarked ? 'Remove From Bookmark' : 'Add To Bookmark',
-                  style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+                  isBookmarked ? 'Remove From Favorites' : 'Add To Favorites',
+                  style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -275,7 +277,10 @@ class _DetailScreenState extends State<DetailScreen> {
                 ),
                 child: const Text(
                   'Give Rating',
-                  style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -285,5 +290,3 @@ class _DetailScreenState extends State<DetailScreen> {
     );
   }
 }
-
-

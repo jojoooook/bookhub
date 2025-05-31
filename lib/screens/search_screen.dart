@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:bookhub/data/book_data.dart';
 import 'package:bookhub/models/book.dart';
 import 'package:bookhub/screens/detail_screen.dart';
+import 'package:bookhub/services/book_service.dart';
 
 class SearchScreen extends StatefulWidget {
   static const routeName = '/search';
@@ -13,17 +13,18 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
+  final BookService _bookService = BookService();
   List<String> _recentSearches = [];
   List<Book> _searchResults = [];
   bool _isBookFound = true;
-
-  List<Book> get bookData => books;
+  late Future<List<Book>> _booksFuture;
 
   @override
   void initState() {
     super.initState();
     _loadRecentSearches();
+    _booksFuture = _bookService.getBooks();
   }
 
   void _loadRecentSearches() async {
@@ -58,9 +59,10 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-  void _searchBook() {
+  Future<void> _searchBook() async {
     final query = _searchController.text.toLowerCase();
-    final results = bookData.where((book) {
+    final allBooks = await _booksFuture;
+    final results = allBooks.where((book) {
       return book.title.toLowerCase().contains(query) ||
           book.author.toLowerCase().contains(query) ||
           book.genre.toLowerCase().contains(query);
@@ -85,6 +87,7 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _loadRecentSearches();
@@ -112,20 +115,20 @@ class _SearchScreenState extends State<SearchScreen> {
               _searchBook();
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Input tidak boleh kosong')),
+                const SnackBar(content: Text('Input tidak boleh kosong')),
               );
             }
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
               if (_searchController.text.isNotEmpty) {
                 _searchBook();
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Input tidak boleh kosong')),
+                  const SnackBar(content: Text('Input tidak boleh kosong')),
                 );
               }
             },
@@ -141,20 +144,23 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Recent',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   TextButton(
                     onPressed: () async {
                       SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
+                          await SharedPreferences.getInstance();
                       await prefs.remove('recentSearches');
                       setState(() {
                         _recentSearches.clear();
                       });
                     },
-                    child: Text('Clear All', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+                    child: const Text(
+                      'Clear All',
+                      style: TextStyle(
+                          color: Colors.grey, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -174,7 +180,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     },
                     child: Chip(
                       label: Text(search),
-                      deleteIcon: Icon(Icons.close),
+                      deleteIcon: const Icon(Icons.close),
                       onDeleted: () {
                         _removeRecentSearch(search);
                       },
@@ -187,36 +193,36 @@ class _SearchScreenState extends State<SearchScreen> {
             Expanded(
               child: _isBookFound
                   ? ListView.builder(
-                itemCount: _searchResults.length,
-                itemBuilder: (context, index) {
-                  final book = _searchResults[index];
-                  return ListTile(
-                    title: Text(book.title),
-                    subtitle: Text(
-                        'Author: ${book.author} | Genre: ${book.genre}'),
-                    leading: Image.asset(book.imageUrl, width: 50),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
-                      onPressed: () {
-                        _removeSearchResult(index);
+                      itemCount: _searchResults.length,
+                      itemBuilder: (context, index) {
+                        final book = _searchResults[index];
+                        return ListTile(
+                          title: Text(book.title),
+                          subtitle: Text(
+                              'Author: ${book.author} | Genre: ${book.genre}'),
+                          leading: Image.asset(book.imageUrl, width: 50),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              _removeSearchResult(index);
+                            },
+                          ),
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              DetailScreen.routeName,
+                              arguments: book,
+                            );
+                          },
+                        );
                       },
+                    )
+                  : const Center(
+                      child: Text(
+                        'No books found.',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
                     ),
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        DetailScreen.routeName,
-                        arguments: book,
-                      );
-                    },
-                  );
-                },
-              )
-                  : Center(
-                child: Text(
-                  'No books found.',
-                  style: TextStyle(fontSize: 18, color: Colors.grey),
-                ),
-              ),
             ),
         ],
       ),

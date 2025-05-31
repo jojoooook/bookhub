@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import '/models/book.dart';
-import 'package:bookhub/data/book_data.dart';
-import 'package:bookhub/data/user_data.dart';
 import 'package:bookhub/screens/detail_screen.dart';
 import 'package:bookhub/services/auth_service.dart';
+import 'package:bookhub/services/book_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,11 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   String? userName;
+  final BookService _bookService = BookService();
+  late Future<List<Book>> _booksFuture;
 
   @override
   void initState() {
     super.initState();
     _loadUser();
+    _booksFuture = _bookService.getBooks();
   }
 
   Future<void> _loadUser() async {
@@ -37,24 +39,23 @@ class _HomeScreenState extends State<HomeScreen> {
     final firebaseUser = authService.currentUser;
     if (firebaseUser != null) {
       final userData = await authService.fetchUserProfile(firebaseUser.uid);
-      print('Fetched userData: $userData'); // Debug print
       setState(() {
         userName = userData?['name'] ?? firebaseUser.email ?? 'Guest';
       });
-      print('Set userName: $userName'); // Debug print
     } else {
       setState(() {
         userName = 'Guest';
       });
-      print('No firebase user, set userName to Guest'); // Debug print
     }
   }
 
-  List<Book> get filteredBooks {
+  Future<List<Book>> get filteredBooks async {
+    final books = await _booksFuture;
     return books.where((book) => book.genre == _selectedCategory).toList();
   }
 
-  List<Book> get recentlyAddedBooks {
+  Future<List<Book>> get recentlyAddedBooks async {
+    final books = await _booksFuture;
     return books.length > 10
         ? books.sublist(books.length - 10).reversed.toList()
         : books.reversed.toList();
@@ -117,97 +118,112 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 16),
               Container(
                 height: 270,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: recentlyAddedBooks.length,
-                  itemBuilder: (context, index) {
-                    final book = recentlyAddedBooks[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          DetailScreen.routeName,
-                          arguments: book,
+                child: FutureBuilder<List<Book>>(
+                  future: recentlyAddedBooks,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    }
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('No books found'));
+                    }
+
+                    final books = snapshot.data!;
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: books.length,
+                      itemBuilder: (context, index) {
+                        final book = books[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              DetailScreen.routeName,
+                              arguments: book,
+                            );
+                          },
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: 120,
+                                margin: EdgeInsets.symmetric(horizontal: 4),
+                                child: Column(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Image.asset(
+                                        book.imageUrl,
+                                        height: 180,
+                                        width: 120,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Center(
+                                      child: Text(
+                                        book.title,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                        textAlign: TextAlign.center,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2),
+                                    Center(
+                                      child: Text(
+                                        '${book.author}',
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[600],
+                                            fontWeight: FontWeight.bold),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Positioned(
+                                top: 8,
+                                left: 8,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.star,
+                                          size: 14, color: Colors.amber),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        '${book.rating}',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         );
                       },
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: 120,
-                            margin: EdgeInsets.symmetric(horizontal: 4),
-                            child: Column(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.asset(
-                                    book.imageUrl,
-                                    height: 180,
-                                    width: 120,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Center(
-                                  child: Text(
-                                    book.title,
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center,
-                                    maxLines: 2, // Batasi maksimal 2 baris
-                                    overflow: TextOverflow
-                                        .ellipsis, // Tambahkan elipsis jika terlalu panjang
-                                  ),
-                                ),
-                                SizedBox(height: 2),
-                                Center(
-                                  child: Text(
-                                    '${book.author}',
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey[600],
-                                        fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            top: 8,
-                            left: 8,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.star,
-                                      size: 14, color: Colors.amber),
-                                  SizedBox(width: 2),
-                                  Text(
-                                    '${book.rating}',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     );
                   },
                 ),
@@ -232,96 +248,112 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 8),
               Container(
                 height: 270,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: filteredBooks.length,
-                  itemBuilder: (context, index) {
-                    final book = filteredBooks[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          DetailScreen.routeName,
-                          arguments: book,
+                child: FutureBuilder<List<Book>>(
+                  future: filteredBooks,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    }
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(
+                          child: Text('No books found in this category'));
+                    }
+
+                    final books = snapshot.data!;
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: books.length,
+                      itemBuilder: (context, index) {
+                        final book = books[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              DetailScreen.routeName,
+                              arguments: book,
+                            );
+                          },
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: 120,
+                                margin: EdgeInsets.symmetric(horizontal: 4),
+                                child: Column(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Image.asset(
+                                        book.imageUrl,
+                                        height: 180,
+                                        width: 120,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      book.title,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    SizedBox(height: 2),
+                                    Text(
+                                      '${book.author}',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Positioned(
+                                top: 8,
+                                left: 8,
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 4,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.star,
+                                          size: 14, color: Colors.amber),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        '${book.rating}',
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         );
                       },
-                      child: Stack(
-                        children: [
-                          Container(
-                            width: 120,
-                            margin: EdgeInsets.symmetric(horizontal: 4),
-                            child: Column(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Image.asset(
-                                    book.imageUrl,
-                                    height: 180,
-                                    width: 120,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                SizedBox(height: 4),
-                                Text(
-                                  book.title,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14, // Ukuran font lebih kecil
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2, // Batas 2 baris
-                                  overflow: TextOverflow
-                                      .ellipsis, // Potong teks dengan elipsis
-                                ),
-                                SizedBox(height: 2),
-                                Text(
-                                  '${book.author}',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            top: 8,
-                            left: 8,
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 4,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.star,
-                                      size: 14, color: Colors.amber),
-                                  SizedBox(width: 2),
-                                  Text(
-                                    '${book.rating}',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     );
                   },
                 ),

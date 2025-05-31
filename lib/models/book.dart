@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 class Book {
+  final String id;
   final String title;
   final String author;
   final String imageUrl;
@@ -13,6 +14,7 @@ class Book {
   final String date;
 
   Book({
+    required this.id,
     required this.title,
     required this.author,
     required this.imageUrl,
@@ -24,6 +26,7 @@ class Book {
   });
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'title': title,
       'author': author,
       'imageUrl': imageUrl,
@@ -38,6 +41,7 @@ class Book {
   // Konversi dari JSON
   factory Book.fromJson(Map<String, dynamic> json) {
     return Book(
+      id: json['id'] ?? '',
       title: json['title'],
       author: json['author'],
       imageUrl: json['imageUrl'],

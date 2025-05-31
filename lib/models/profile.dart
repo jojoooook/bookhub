@@ -1,13 +1,13 @@
 class Profile {
   String name;
   String email;
-  String phoneNumber;
+  String phone;
   String birthday;
 
   Profile({
     required this.name,
     required this.email,
-    required this.phoneNumber,
+    required this.phone,
     required this.birthday,
   });
 }
