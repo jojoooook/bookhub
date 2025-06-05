@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '/models/book.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import '../services/book_service.dart';
 
 class RatingScreen extends StatefulWidget {
   static const String routeName = '/rating';
@@ -13,6 +16,128 @@ class RatingScreen extends StatefulWidget {
 
 class _RatingScreenState extends State<RatingScreen> {
   double selectedRating = 0.0;
+  final TextEditingController _commentController = TextEditingController();
+  final BookService _bookService = BookService();
+  bool _isSubmitting = false;
+
+  Future<Position?> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return null;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return null;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return null;
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+
+  Future<String> _getCityFromPosition(Position position) async {
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
+      if (placemarks.isNotEmpty) {
+        return placemarks.first.locality ?? '';
+      }
+      return '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  Future<void> _submitRatingAndComment(Book book) async {
+    if (selectedRating == 0.0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a rating')),
+      );
+      return;
+    }
+    if (_commentController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a comment')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    Position? position = await _determinePosition();
+    double latitude = 0.0;
+    double longitude = 0.0;
+    String city = '';
+
+    if (position != null) {
+      latitude = position.latitude;
+      longitude = position.longitude;
+      city = await _getCityFromPosition(position);
+    }
+
+    try {
+      await _bookService.addRating(
+        bookId: book.id,
+        ratingValue: selectedRating,
+      );
+      await _bookService.addComment(
+        bookId: book.id,
+        commentText: _commentController.text.trim(),
+        latitude: latitude,
+        longitude: longitude,
+        city: city,
+      );
+
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Success'),
+            content: const Text(
+                'Your rating and comment have been submitted successfully!'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close the dialog
+                  Navigator.pop(context); // Return to DetailScreen
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to submit rating and comment')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -235,6 +360,7 @@ class _RatingScreenState extends State<RatingScreen> {
                 ),
                 const SizedBox(height: 8),
                 TextField(
+                  controller: _commentController,
                   maxLines: 5,
                   decoration: InputDecoration(
                     hintText: 'Write your review here...',
@@ -246,28 +372,11 @@ class _RatingScreenState extends State<RatingScreen> {
                 const SizedBox(height: 32),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text('Success'),
-                            content: const Text(
-                                'Your rating has been submitted successfully!'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context); // Close the dialog
-                                  Navigator.pop(
-                                      context); // Return to DetailScreen
-                                },
-                                child: const Text('OK'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
+                    onPressed: _isSubmitting
+                        ? null
+                        : () {
+                            _submitRatingAndComment(book);
+                          },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -276,13 +385,17 @@ class _RatingScreenState extends State<RatingScreen> {
                       backgroundColor: const Color(0xFF233973),
                       minimumSize: const Size.fromHeight(50),
                     ),
-                    child: const Text(
-                      'Submit',
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold),
-                    ),
+                    child: _isSubmitting
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                          )
+                        : const Text(
+                            'Submit',
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
                   ),
                 ),
               ],

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/book.dart';
+import '../models/comment.dart';
+import '../models/rating.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class BookService {
@@ -138,6 +140,104 @@ class BookService {
     } catch (e) {
       print('Error checking favorite status: $e');
       return false;
+    }
+  }
+
+  // Add comment to a book
+  Future<void> addComment({
+    required String bookId,
+    required String commentText,
+    required double latitude,
+    required double longitude,
+    required String city,
+  }) async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final commentRef = _firestore
+            .collection(collectionPath)
+            .doc(bookId)
+            .collection('comments')
+            .doc();
+
+        await commentRef.set({
+          'id': commentRef.id,
+          'userId': user.uid,
+          'bookId': bookId,
+          'commentText': commentText,
+          'latitude': latitude,
+          'longitude': longitude,
+          'city': city,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (e) {
+      print('Error adding comment: $e');
+      throw e;
+    }
+  }
+
+  // Get comments for a book
+  Future<List<Comment>> getComments(String bookId) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection(collectionPath)
+          .doc(bookId)
+          .collection('comments')
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => Comment.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print('Error fetching comments: $e');
+      return [];
+    }
+  }
+
+  // Add rating to a book by user
+  Future<void> addRating({
+    required String bookId,
+    required double ratingValue,
+  }) async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final ratingRef = _firestore
+            .collection(collectionPath)
+            .doc(bookId)
+            .collection('ratings')
+            .doc(user.uid);
+
+        await ratingRef.set({
+          'id': ratingRef.id,
+          'userId': user.uid,
+          'bookId': bookId,
+          'ratingValue': ratingValue,
+        });
+      }
+    } catch (e) {
+      print('Error adding rating: $e');
+      throw e;
+    }
+  }
+
+  // Get ratings for a book
+  Future<List<Rating>> getRatings(String bookId) async {
+    try {
+      final querySnapshot = await _firestore
+          .collection(collectionPath)
+          .doc(bookId)
+          .collection('ratings')
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => Rating.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print('Error fetching ratings: $e');
+      return [];
     }
   }
 }
