@@ -5,8 +5,14 @@ import 'package:bookhub/services/profile_services.dart';
 import 'package:bookhub/data/user_data.dart'; // Untuk fungsi logout
 import 'package:bookhub/services/auth_service.dart';
 
+// Import Provider and ThemeProvider
+import 'package:provider/provider.dart';
+import 'package:bookhub/main.dart'; // Asumsikan ThemeProvider ada di main.dart
+
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final Function(bool)? onThemeChanged;
+
+  const ProfileScreen({super.key, this.onThemeChanged});
   static const String routeName = '/profile';
 
   @override
@@ -19,6 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     email: 'default@example.com',
     phone: '000-0000-0000',
     birthday: '01-01-2000',
+    darkMode: false,
   );
 
   @override
@@ -31,6 +38,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final authService = AuthService();
     final firebaseUser = authService.currentUser;
     if (firebaseUser != null) {
+      // Pastikan widget masih ter-mount sebelum menggunakan context secara asynchronous
+      if (!mounted) return;
+      final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+
       final userData = await authService.fetchUserProfile(firebaseUser.uid);
       if (userData != null) {
         setState(() {
@@ -39,15 +50,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
             email: firebaseUser.email ?? 'No Email',
             phone: userData['phone'] ?? 'No Phone',
             birthday: userData['birthday'] ?? 'No Birthday',
+            // Selaraskan profile.darkMode dengan state ThemeProvider pada awalnya
+            // Ini mengasumsikan ThemeProvider.isDarkMode menyimpan nilai persistensi yang benar.
+            darkMode: themeProvider.isDarkMode,
+          );
+        });
+      } else {
+        // Jika userData null (misalnya, pengguna baru, fetch gagal),
+        // tetap pastikan profile.darkMode selaras dengan ThemeProvider.
+        // Ini memperbarui instance profile default.
+        setState(() {
+          profile = Profile(
+            name: profile.name, // Pertahankan nilai default/yang sudah dimuat
+            email: profile.email,
+            phone: profile.phone,
+            birthday: profile.birthday,
+            darkMode: themeProvider.isDarkMode,
           );
         });
       }
     }
   }
 
+  Future<void> _saveDarkModePreference(bool value) async {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    themeProvider.setDarkMode(value);
+    final profileService = ProfileService();
+    profile.darkMode = value;
+    await profileService.saveProfile(profile);
+    if (widget.onThemeChanged != null) {
+      widget.onThemeChanged!(value);
+    }
+  }
+
   Future<void> _logout() async {
     bool confirmLogout = await _showLogoutConfirmation();
     if (confirmLogout) {
+      final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+      themeProvider.setDarkMode(false);
       await logoutUser(); // Fungsi logout dari user_data.dart
       Navigator.pushNamedAndRemoveUntil(
         context,
@@ -120,25 +160,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                 ),
-                Positioned(
-                  top: 170,
-                  left: MediaQuery.of(context).size.width / 2 - 80,
-                  child: CircleAvatar(
-                    radius: 80,
-                    backgroundColor: Colors.grey[200],
-                    child: ClipOval(
-                      child: Image.asset(
-                        'images/avatar.png',
-                        fit: BoxFit.cover,
-                        width: 200,
-                        height: 200,
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
-            const SizedBox(height: 130),
+            // Mengurangi jarak setelah header karena avatar dihilangkan
+            const SizedBox(height: 30),
             // Informasi Profil
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -162,7 +187,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ProfileInfoRow(
                     icon: Icons.cake,
                     label: 'Birthday Date',
-                    value: profile.birthday,
+                    value: profile.birthday.contains('T')
+                        ? profile.birthday.split('T')[0]
+                        : profile.birthday,
+                  ),
+                  SwitchListTile(
+                    title: const Text('Dark Mode'),
+                    value: Provider.of<ThemeProvider>(context).isDarkMode,
+                    onChanged: (bool value) {
+                      _saveDarkModePreference(value);
+                    },
+                    secondary: const Icon(Icons.dark_mode),
                   ),
                   const SizedBox(height: 20),
                   // Tombol Edit Profil
@@ -248,7 +283,7 @@ class ProfileInfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          Icon(icon, size: 30, color: Colors.black),
+          Icon(icon, size: 30, color: Theme.of(context).colorScheme.onSurface),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -256,17 +291,20 @@ class ProfileInfoRow extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.6),
                   ),
                 ),
                 Text(
                   value,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],

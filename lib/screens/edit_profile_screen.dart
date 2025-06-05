@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart'; // Paket untuk memilih gambar
 import 'package:bookhub/models/profile.dart';
 import 'package:bookhub/services/profile_services.dart';
-import 'dart:html' as html;
 
 class EditProfileScreen extends StatefulWidget {
   final Profile profile;
@@ -23,16 +22,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _phoneController;
   late TextEditingController _birthdayController;
 
-  File? _profileImage; // For mobile
-  html.File? _webProfileImage; // For web
-
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.profile.name);
     _emailController = TextEditingController(text: widget.profile.email);
     _phoneController = TextEditingController(text: widget.profile.phone);
-    _birthdayController = TextEditingController(text: widget.profile.birthday);
+    String birthday = widget.profile.birthday;
+    if (birthday.contains('T')) {
+      birthday = birthday.split('T')[0];
+    }
+    _birthdayController = TextEditingController(text: birthday);
   }
 
   @override
@@ -42,32 +42,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _phoneController.dispose();
     _birthdayController.dispose();
     super.dispose();
-  }
-
-  // Function to pick image from gallery or camera
-  Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(
-        source: ImageSource.gallery); // Pick from gallery
-
-    if (image != null) {
-      if (kIsWeb) {
-        final bytes = await image.readAsBytes();
-        final blob = html.Blob([bytes]);
-        final file = html.File([blob], image.name);
-        print('Picked web image file: ${file.name}, size: ${file.size}');
-        setState(() {
-          _webProfileImage = file;
-          _profileImage = null;
-        });
-      } else {
-        print('Picked mobile image file: ${image.path}');
-        setState(() {
-          _profileImage = File(image.path);
-          _webProfileImage = null;
-        });
-      }
-    }
   }
 
   void _saveProfile() async {
@@ -90,13 +64,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     try {
       final profileService = ProfileService();
-      if (kIsWeb) {
-        await profileService.saveProfile(updatedProfile,
-            profileImage: _webProfileImage as dynamic);
-      } else {
-        await profileService.saveProfile(updatedProfile,
-            profileImage: _profileImage as dynamic);
-      }
+      await profileService.saveProfile(updatedProfile);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Profile updated successfully')),
       );
@@ -126,26 +94,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: GestureDetector(
-                    onTap: _pickImage,
-                    child: CircleAvatar(
-                      radius: 80,
-                      backgroundColor: Colors.grey[200],
-                      backgroundImage: _profileImage != null
-                          ? FileImage(_profileImage!)
-                          : const AssetImage('images/avatar.png')
-                              as ImageProvider,
-                      child: _profileImage == null
-                          ? const Icon(
-                              Icons.camera_alt,
-                              size: 30,
-                              color: Colors.grey,
-                            )
-                          : null,
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 20),
                 TextField(
                   controller: _nameController,

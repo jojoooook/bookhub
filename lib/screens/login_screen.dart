@@ -2,6 +2,9 @@ import 'package:bookhub/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bookhub/services/auth_service.dart';
 import 'package:flutter/gestures.dart';
+import 'package:provider/provider.dart';
+import 'package:bookhub/services/profile_services.dart';
+import 'package:bookhub/main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -29,6 +32,15 @@ class _LoginScreenState extends State<LoginScreen> {
       try {
         final user = await _authService.signIn(email, password);
         if (user != null) {
+          final themeProvider =
+              Provider.of<ThemeProvider>(context, listen: false);
+          final profileService = ProfileService();
+          final profile = await profileService.getProfile();
+          if (profile != null) {
+            themeProvider.setDarkMode(profile.darkMode);
+          } else {
+            themeProvider.setDarkMode(false);
+          }
           Navigator.pushNamedAndRemoveUntil(context, '/main', (_) => false);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -54,6 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -65,13 +78,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Header Image
                     Container(
                       height: 250,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF233973),
-                        image: DecorationImage(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        image: const DecorationImage(
                           image: AssetImage('images/profile_screen.png'),
                           fit: BoxFit.cover,
                         ),
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(30),
                           bottomRight: Radius.circular(30),
                         ),
@@ -79,12 +92,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 20),
                     // Welcome Text
-                    const Text(
+                    Text(
                       'Welcome to BookHub',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Theme.of(context).colorScheme.onBackground,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -95,29 +108,39 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Login',
                             style: TextStyle(
                               fontSize: 40,
                               fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onBackground,
                             ),
                           ),
                           Text(
                             'Please sign in to continue',
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.grey[600]),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onBackground
+                                    .withOpacity(0.7)),
                           ),
                           const SizedBox(height: 24),
                           TextField(
                             controller: emailController,
                             decoration: InputDecoration(
                               labelText: 'Email Address',
-                              prefixIcon: const Icon(Icons.email),
+                              prefixIcon: Icon(Icons.email,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
+                            style: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onBackground),
                           ),
                           const SizedBox(height: 16),
                           TextField(
@@ -125,22 +148,29 @@ class _LoginScreenState extends State<LoginScreen> {
                             obscureText: true,
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              prefixIcon: const Icon(Icons.lock),
+                              prefixIcon: Icon(Icons.lock,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onBackground),
                               suffixText: 'FORGOT',
-                              suffixStyle: const TextStyle(
-                                  color: Color(0xFF233973),
+                              suffixStyle: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
                                   fontWeight: FontWeight.bold),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
+                            style: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.onBackground),
                           ),
                           const SizedBox(height: 24),
                           ElevatedButton(
                             onPressed: _isLoading ? null : _login,
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 50),
-                              backgroundColor: const Color(0xFF233973),
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -148,8 +178,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: _isLoading
                                 ? const CircularProgressIndicator(
                                     color: Colors.white)
-                                : const Text('LOGIN',
-                                    style: TextStyle(
+                                : Text('LOGIN',
+                                    style: const TextStyle(
                                         fontSize: 16,
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold)),
@@ -166,15 +196,18 @@ class _LoginScreenState extends State<LoginScreen> {
               child: RichText(
                 text: TextSpan(
                   text: "Don't have an account? ",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onBackground
+                        .withOpacity(0.7),
                   ),
                   children: [
                     TextSpan(
                       text: 'Sign Up',
-                      style: const TextStyle(
-                          color: Color(0xFF233973),
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {

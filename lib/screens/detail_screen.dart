@@ -33,7 +33,7 @@ class _DetailScreenState extends State<DetailScreen> {
   Widget build(BuildContext context) {
     final Book book = ModalRoute.of(context)!.settings.arguments as Book;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -44,7 +44,8 @@ class _DetailScreenState extends State<DetailScreen> {
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back),
+                      icon: Icon(Icons.arrow_back,
+                          color: Theme.of(context).colorScheme.onBackground),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -56,9 +57,10 @@ class _DetailScreenState extends State<DetailScreen> {
                     children: [
                       Text(
                         book.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onBackground,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -82,7 +84,10 @@ class _DetailScreenState extends State<DetailScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[600],
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onBackground
+                                .withOpacity(0.7),
                             fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -91,7 +96,10 @@ class _DetailScreenState extends State<DetailScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onBackground
+                              .withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -101,7 +109,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: [
                       BoxShadow(
@@ -121,17 +129,20 @@ class _DetailScreenState extends State<DetailScreen> {
                           const SizedBox(width: 4),
                           Text(
                             '${book.rating}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Colors.black,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
-                          const Text(
+                          Text(
                             '/5',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.7),
                             ),
                           ),
                         ],
@@ -139,30 +150,36 @@ class _DetailScreenState extends State<DetailScreen> {
                       Container(
                         height: 24,
                         width: 1,
-                        color: Colors.grey[300],
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.3),
                       ),
                       Text(
                         book.genre,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       Container(
                         height: 24,
                         width: 1,
-                        color: Colors.grey[300],
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.3),
                       ),
                       RichText(
                         text: TextSpan(
                           children: [
                             TextSpan(
                               text: '${book.pages} ',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                                color: Colors.black,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                             TextSpan(
@@ -170,7 +187,10 @@ class _DetailScreenState extends State<DetailScreen> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.grey[600],
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.7),
                               ),
                             ),
                           ],
@@ -180,19 +200,21 @@ class _DetailScreenState extends State<DetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text(
+                Text(
                   'Synopsis',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   book.synopsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     height: 1.5,
+                    color: Theme.of(context).colorScheme.onBackground,
                   ),
                 ),
               ],
@@ -201,7 +223,7 @@ class _DetailScreenState extends State<DetailScreen> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         elevation: 0,
         child: Row(
           children: [

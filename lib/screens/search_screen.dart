@@ -107,28 +107,36 @@ class _SearchScreenState extends State<SearchScreen> {
               borderSide: BorderSide.none,
             ),
             filled: true,
-            fillColor: Colors.grey[200],
+            fillColor: Theme.of(context).colorScheme.surface,
             contentPadding: const EdgeInsets.symmetric(horizontal: 16),
           ),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           onSubmitted: (value) {
             if (value.isNotEmpty) {
               _searchBook();
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Input tidak boleh kosong')),
+                SnackBar(
+                    content: Text('Input tidak boleh kosong',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface))),
               );
             }
           },
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: Icon(Icons.search,
+                color: Theme.of(context).colorScheme.onSurface),
             onPressed: () {
               if (_searchController.text.isNotEmpty) {
                 _searchBook();
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Input tidak boleh kosong')),
+                  SnackBar(
+                      content: Text('Input tidak boleh kosong',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface))),
                 );
               }
             },
@@ -144,9 +152,12 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Recent',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface),
                   ),
                   TextButton(
                     onPressed: () async {
@@ -157,10 +168,14 @@ class _SearchScreenState extends State<SearchScreen> {
                         _recentSearches.clear();
                       });
                     },
-                    child: const Text(
+                    child: Text(
                       'Clear All',
                       style: TextStyle(
-                          color: Colors.grey, fontWeight: FontWeight.bold),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.6),
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
@@ -179,8 +194,11 @@ class _SearchScreenState extends State<SearchScreen> {
                       _searchBook();
                     },
                     child: Chip(
-                      label: Text(search),
-                      deleteIcon: const Icon(Icons.close),
+                      label: Text(search,
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface)),
+                      deleteIcon: Icon(Icons.close,
+                          color: Theme.of(context).colorScheme.onSurface),
                       onDeleted: () {
                         _removeRecentSearch(search);
                       },
@@ -197,12 +215,20 @@ class _SearchScreenState extends State<SearchScreen> {
                       itemBuilder: (context, index) {
                         final book = _searchResults[index];
                         return ListTile(
-                          title: Text(book.title),
+                          title: Text(book.title,
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface)),
                           subtitle: Text(
-                              'Author: ${book.author} | Genre: ${book.genre}'),
+                              'Author: ${book.author} | Genre: ${book.genre}',
+                              style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.7))),
                           leading: Image.asset(book.imageUrl, width: 50),
                           trailing: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
+                            icon: Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
                               _removeSearchResult(index);
                             },
@@ -217,10 +243,15 @@ class _SearchScreenState extends State<SearchScreen> {
                         );
                       },
                     )
-                  : const Center(
+                  : Center(
                       child: Text(
                         'No books found.',
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.6)),
                       ),
                     ),
             ),

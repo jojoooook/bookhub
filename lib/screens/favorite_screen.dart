@@ -48,10 +48,12 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
             : favoriteBooks.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
                       'No favorites found',
-                      style: TextStyle(fontSize: 16),
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurface),
                     ),
                   )
                 : GridView.builder(
@@ -77,7 +79,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                         },
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
@@ -108,9 +110,11 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                     horizontal: 8.0, vertical: 4.0),
                                 child: Text(
                                   book.title,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,

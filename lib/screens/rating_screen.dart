@@ -31,7 +31,7 @@ class _RatingScreenState extends State<RatingScreen> {
     final Book book = arguments;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -42,7 +42,8 @@ class _RatingScreenState extends State<RatingScreen> {
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back),
+                      icon: Icon(Icons.arrow_back,
+                          color: Theme.of(context).colorScheme.onBackground),
                       onPressed: () {
                         Navigator.pop(context);
                       },
@@ -54,9 +55,10 @@ class _RatingScreenState extends State<RatingScreen> {
                     children: [
                       Text(
                         book.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onBackground,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -80,7 +82,10 @@ class _RatingScreenState extends State<RatingScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey[600],
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onBackground
+                                .withOpacity(0.7),
                             fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -89,7 +94,10 @@ class _RatingScreenState extends State<RatingScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onBackground
+                              .withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -99,7 +107,7 @@ class _RatingScreenState extends State<RatingScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    color: Colors.grey[50],
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: [
                       BoxShadow(
@@ -119,17 +127,20 @@ class _RatingScreenState extends State<RatingScreen> {
                           const SizedBox(width: 4),
                           Text(
                             '${book.rating}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Colors.black,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
-                          const Text(
+                          Text(
                             '/5',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.7),
                             ),
                           ),
                         ],
@@ -137,39 +148,47 @@ class _RatingScreenState extends State<RatingScreen> {
                       Container(
                         height: 24,
                         width: 1,
-                        color: Colors.grey[300],
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.3),
                       ),
                       Text(
                         book.genre,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       Container(
                         height: 24,
                         width: 1,
-                        color: Colors.grey[300],
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.3),
                       ),
                       RichText(
                         text: TextSpan(
                           children: [
                             TextSpan(
                               text: '${book.pages} ',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                                color: Colors.black,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                             TextSpan(
                               text: 'Pages',
                               style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
-                                fontWeight: FontWeight.bold
-                              ),
+                                  fontSize: 14,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.7),
+                                  fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -233,12 +252,14 @@ class _RatingScreenState extends State<RatingScreen> {
                         builder: (context) {
                           return AlertDialog(
                             title: const Text('Success'),
-                            content: const Text('Your rating has been submitted successfully!'),
+                            content: const Text(
+                                'Your rating has been submitted successfully!'),
                             actions: [
                               TextButton(
                                 onPressed: () {
                                   Navigator.pop(context); // Close the dialog
-                                  Navigator.pop(context); // Return to DetailScreen
+                                  Navigator.pop(
+                                      context); // Return to DetailScreen
                                 },
                                 child: const Text('OK'),
                               ),
@@ -257,7 +278,10 @@ class _RatingScreenState extends State<RatingScreen> {
                     ),
                     child: const Text(
                       'Submit',
-                      style: TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
