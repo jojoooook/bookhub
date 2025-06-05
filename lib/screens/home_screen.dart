@@ -70,20 +70,20 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       },
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
         decoration: BoxDecoration(
-          color: isSelected ? Color(0xFF233973) : Colors.white,
+          color: isSelected ? const Color(0xFF233973) : Colors.white,
           borderRadius: BorderRadius.circular(6),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
               blurRadius: 6,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 2),
             ),
           ],
         ),
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
         child: Text(
           category,
           style: TextStyle(
@@ -92,6 +92,47 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAverageRating(String bookId) {
+    return FutureBuilder(
+      future: _bookService.getRatings(bookId),
+      builder: (context, AsyncSnapshot<List> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SizedBox(
+            width: 30,
+            height: 14,
+            child: Center(
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          );
+        }
+        if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Text(
+            '0.0',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          );
+        }
+        final ratings = snapshot.data!;
+        double total = 0;
+        for (var rating in ratings) {
+          total += rating.ratingValue;
+        }
+        final average = ratings.isNotEmpty ? total / ratings.length : 0.0;
+        return Text(
+          average.toStringAsFixed(2),
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        );
+      },
     );
   }
 
@@ -108,27 +149,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.only(bottom: 24.0, top: 40.0),
                 child: Text(
                   'Hello, ${userName ?? 'Guest'}!',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
               const Text(
-                'Recently Added Books',
+                'Trending Books',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 16),
-              Container(
+              const SizedBox(height: 16),
+              SizedBox(
                 height: 270,
                 child: FutureBuilder<List<Book>>(
                   future: recentlyAddedBooks,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     }
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     }
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('No books found'));
+                      return const Center(child: Text('No books found'));
                     }
 
                     final books = snapshot.data!;
@@ -149,7 +191,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Container(
                                 width: 120,
-                                margin: EdgeInsets.symmetric(horizontal: 4),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 4),
                                 child: Column(
                                   children: [
                                     ClipRRect(
@@ -161,21 +204,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                         fit: BoxFit.cover,
                                       ),
                                     ),
-                                    SizedBox(height: 4),
+                                    const SizedBox(height: 4),
                                     Center(
                                       child: Text(
                                         book.title,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                         textAlign: TextAlign.center,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
-                                    SizedBox(height: 2),
+                                    const SizedBox(height: 2),
                                     Center(
                                       child: Text(
-                                        '${book.author}',
+                                        book.author,
                                         style: TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey[600],
@@ -190,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 top: 8,
                                 left: 8,
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                       horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
@@ -199,23 +242,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                       BoxShadow(
                                         color: Colors.black.withOpacity(0.1),
                                         blurRadius: 4,
-                                        offset: Offset(0, 2),
+                                        offset: const Offset(0, 2),
                                       ),
                                     ],
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.star,
+                                      const Icon(Icons.star,
                                           size: 14, color: Colors.amber),
-                                      SizedBox(width: 2),
-                                      Text(
-                                        '${book.rating}',
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
+                                      const SizedBox(width: 2),
+                                      _buildAverageRating(book.id),
                                     ],
                                   ),
                                 ),
@@ -228,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -240,25 +276,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   }).toList(),
                 ),
               ),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               Text(
                 'Books in $_selectedCategory category',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 8),
-              Container(
+              const SizedBox(height: 8),
+              SizedBox(
                 height: 270,
                 child: FutureBuilder<List<Book>>(
                   future: filteredBooks,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     }
                     if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     }
                     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(
+                      return const Center(
                           child: Text('No books found in this category'));
                     }
 
@@ -280,7 +317,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Container(
                                 width: 120,
-                                margin: EdgeInsets.symmetric(horizontal: 4),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 4),
                                 child: Column(
                                   children: [
                                     ClipRRect(
@@ -292,10 +330,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         fit: BoxFit.cover,
                                       ),
                                     ),
-                                    SizedBox(height: 4),
+                                    const SizedBox(height: 4),
                                     Text(
                                       book.title,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14,
                                       ),
@@ -303,9 +341,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                    SizedBox(height: 2),
+                                    const SizedBox(height: 2),
                                     Text(
-                                      '${book.author}',
+                                      book.author,
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.grey[600],
@@ -320,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 top: 8,
                                 left: 8,
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                       horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
@@ -329,23 +367,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                       BoxShadow(
                                         color: Colors.black.withOpacity(0.1),
                                         blurRadius: 4,
-                                        offset: Offset(0, 2),
+                                        offset: const Offset(0, 2),
                                       ),
                                     ],
                                   ),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.star,
+                                      const Icon(Icons.star,
                                           size: 14, color: Colors.amber),
-                                      SizedBox(width: 2),
-                                      Text(
-                                        '${book.rating}',
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
+                                      const SizedBox(width: 2),
+                                      _buildAverageRating(book.id),
                                     ],
                                   ),
                                 ),

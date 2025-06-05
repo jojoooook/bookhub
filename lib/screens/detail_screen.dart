@@ -71,19 +71,19 @@ class _DetailScreenState extends State<DetailScreen> {
         totalRating += rating.ratingValue;
       }
       double avgRating =
-          ratings.isNotEmpty ? totalRating / ratings.length : 0.0;
+      ratings.isNotEmpty ? totalRating / ratings.length : 0.0;
 
       final Set<String> uniqueUserIds = comments.map((c) => c.userId).toSet();
       final Map<String, String> fetchedUserNames = {};
       for (final userId in uniqueUserIds) {
         final userName = await _bookService.getUserName(userId);
-        fetchedUserNames[userId] = userName ?? 'Anonymous';
+        fetchedUserNames[userId] =
+            userName ?? 'Anonymous';
       }
 
       setState(() {
         _ratings = ratings;
-        _comments = comments
-          ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+        _comments = comments..sort((a, b) => b.timestamp.compareTo(a.timestamp));
         _averageRating = avgRating;
         _numberOfRatings = ratings.length;
         _userNames = fetchedUserNames;
@@ -130,13 +130,14 @@ class _DetailScreenState extends State<DetailScreen> {
     }
 
     return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.low);
+        desiredAccuracy: LocationAccuracy.low, // Menggunakan akurasi rendah
+    );
   }
 
   Future<String> _getCityFromPosition(Position position) async {
     try {
       List<Placemark> placemarks =
-          await placemarkFromCoordinates(position.latitude, position.longitude);
+      await placemarkFromCoordinates(position.latitude, position.longitude);
       if (placemarks.isNotEmpty) {
         return placemarks.first.locality ??
             placemarks.first.administrativeArea ??
@@ -170,18 +171,29 @@ class _DetailScreenState extends State<DetailScreen> {
       _isCommentSubmitting = true;
     });
 
-    Position? position = await _determinePosition();
+    // Inisialisasi dengan nilai default aman
     double latitude = 0.0;
     double longitude = 0.0;
     String city = 'Unknown Location';
 
-    if (position != null) {
-      latitude = position.latitude;
-      longitude = position.longitude;
-      city = await _getCityFromPosition(position);
-    } else {
-      print('Could not determine current position for comment.');
+    // Gunakan try-catch untuk penentuan posisi, agar tidak menghentikan proses
+    try {
+      Position? position = await _determinePosition();
+      if (position != null) {
+        latitude = position.latitude;
+        longitude = position.longitude;
+        // Hanya ambil kota jika berhasil, jika tidak biarkan default
+        city = await _getCityFromPosition(position);
+        print('Location obtained: $city, $latitude, $longitude'); // Debugging
+      } else {
+        print('Could not determine current position for comment. Using default values.'); // Debugging
+      }
+    } catch (e) {
+      // Tangani error lokasi, tapi biarkan proses berlanjut
+      print('Error determining position or geocoding: $e. Comment will be submitted without location.'); // Debugging
+      // Tidak perlu return, lanjutkan dengan nilai default
     }
+
 
     try {
       await _bookService.addComment(
@@ -264,7 +276,7 @@ class _DetailScreenState extends State<DetailScreen> {
     final Book book = widget.book;
 
     final List<comment_model.Comment> commentsToShow =
-        _showAllComments ? _comments : _comments.take(3).toList();
+    _showAllComments ? _comments : _comments.take(3).toList();
     final bool hasMoreComments = _comments.length > 3;
 
     return Scaffold(
@@ -273,410 +285,385 @@ class _DetailScreenState extends State<DetailScreen> {
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back,
+                          color:
+                          Theme.of(context).colorScheme.onBackground),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
+                Center(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.arrow_back,
-                                color:
-                                    Theme.of(context).colorScheme.onBackground),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ],
-                      ),
-                      Center(
-                        child: Column(
-                          children: [
-                            Text(
-                              book.title,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    Theme.of(context).colorScheme.onBackground,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Container(
-                              width: 120,
-                              height: 180,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.asset(
-                                  book.imageUrl,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Author: ${book.author}',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 14,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onBackground
-                                      .withOpacity(0.7),
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Published on: ${book.date}',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onBackground
-                                    .withOpacity(0.7),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Row(
-                              children: [
-                                const Icon(Icons.star,
-                                    color: Colors.amber, size: 20),
-                                const SizedBox(width: 4),
-                                Text(
-                                  _averageRating.toStringAsFixed(2),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color:
-                                        Theme.of(context).colorScheme.onSurface,
-                                  ),
-                                ),
-                                Text(
-                                  '/5',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.7),
-                                  ),
-                                ),
-                                Text(
-                                  ' ($_numberOfRatings ratings)',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.7),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              height: 24,
-                              width: 1,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.3),
-                            ),
-                            Text(
-                              book.genre,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                            ),
-                            Container(
-                              height: 24,
-                              width: 1,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.3),
-                            ),
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: '${book.pages} ',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: 'Pages',
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                            .withOpacity(0.7),
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 24),
                       Text(
-                        'Synopsis',
+                        book.title,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onBackground,
+                          color:
+                          Theme.of(context).colorScheme.onBackground,
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        book.synopsis,
-                        style: TextStyle(
-                          fontSize: 16,
-                          height: 1.5,
-                          color: Theme.of(context).colorScheme.onBackground,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Comments',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onBackground,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      _comments.isEmpty
-                          ? Text(
-                              'No comments yet.',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onBackground
-                                    .withOpacity(0.7),
-                              ),
-                            )
-                          : ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: commentsToShow.length,
-                              itemBuilder: (context, index) {
-                                final comment = commentsToShow[index];
-                                final userName =
-                                    _userNames[comment.userId] ?? 'Anonymous';
-
-                                final bool canDelete = _currentUser != null &&
-                                    _currentUser!.uid == comment.userId;
-
-                                return Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 4),
-                                  padding: const EdgeInsets.all(
-                                      12.0), // Padding di dalam container
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.grey.shade900
-                                        : Theme.of(context).colorScheme.surface,
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? Colors.grey.shade700
-                                          : Colors.grey.shade300,
-                                      width: 1.0,
-                                    ),
-                                    boxShadow: Theme.of(context).brightness ==
-                                            Brightness.light
-                                        ? [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.grey.withOpacity(0.1),
-                                              spreadRadius: 1,
-                                              blurRadius: 3,
-                                              offset: const Offset(0, 1),
-                                            ),
-                                          ]
-                                        : null,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment: CrossAxisAlignment
-                                            .start, // NEW: align items to start
-                                        children: [
-                                          Expanded(
-                                            // NEW: expanded to take available space
-                                            child: Text(
-                                              userName,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSurface,
-                                              ),
-                                              overflow: TextOverflow
-                                                  .ellipsis, // NEW: prevent text from overflowing
-                                            ),
-                                          ),
-                                          if (canDelete)
-                                            // NEW: Icon tong sampah langsung tanpa PopupMenuButton,
-                                            // Menggunakan Padding untuk mengontrol space
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 8.0,
-                                                  top: 0.0,
-                                                  bottom:
-                                                      0.0), // Sedikit padding kiri
-                                              child: InkWell(
-                                                // Menggunakan InkWell agar bisa diklik
-                                                onTap: () =>
-                                                    _deleteComment(comment.id),
-                                                child: Icon(
-                                                  Icons.delete,
-                                                  color: Colors.red,
-                                                  size:
-                                                      18, // Ukuran ikon agar tidak makan banyak tempat
-                                                ),
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(comment.commentText,
-                                          style: const TextStyle(fontSize: 14)),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Lat: ${comment.latitude.toStringAsFixed(4)}, Lng: ${comment.longitude.toStringAsFixed(4)} - ${comment.timestamp.toLocal().toString().split('.')[0]}',
-                                        style: TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.grey[600]),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                      if (hasMoreComments && !_showAllComments)
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            child: TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  _showAllComments = true;
-                                });
-                              },
-                              child: Text(
-                                'More Comments (${_comments.length - 3} hidden)',
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Add a Comment',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onBackground,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: _commentController,
-                        maxLines: 4,
-                        decoration: InputDecoration(
-                          hintText: 'Write your comment here...',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          fillColor:
-                              Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.grey[800]
-                                  : Theme.of(context).colorScheme.surface,
-                          filled: true,
-                        ),
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface),
                       ),
                       const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed:
-                              _isCommentSubmitting || _currentUser == null
-                                  ? null
-                                  : _submitComment,
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            backgroundColor: const Color(0xFF233973),
+                      Container(
+                        width: 120,
+                        height: 180,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            book.imageUrl,
+                            fit: BoxFit.cover,
                           ),
-                          child: _isCommentSubmitting
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                              : Text(
-                                  _currentUser == null
-                                      ? 'Login to Comment'
-                                      : 'Submit Comment',
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Author: ${book.author}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onBackground
+                                .withOpacity(0.7),
+                            fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Published on: ${book.date}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onBackground
+                              .withOpacity(0.7),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(Icons.star,
+                              color: Colors.amber, size: 20),
+                          const SizedBox(width: 4),
+                          Text(
+                            _averageRating.toStringAsFixed(2),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color:
+                              Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          Text(
+                            '/5',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.7),
+                            ),
+                          ),
+                          Text(
+                            ' ($_numberOfRatings ratings)',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Container(
+                        height: 24,
+                        width: 1,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.3),
+                      ),
+                      Text(
+                        book.genre,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      Container(
+                        height: 24,
+                        width: 1,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.3),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '${book.pages} ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color:
+                                Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            TextSpan(
+                              text: 'Pages',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.7),
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Synopsis',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  book.synopsis,
+                  style: TextStyle(
+                    fontSize: 16,
+                    height: 1.5,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Comments',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _comments.isEmpty
+                    ? Text(
+                  'No comments yet.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onBackground
+                        .withOpacity(0.7),
+                  ),
+                )
+                    : ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: commentsToShow.length,
+                  itemBuilder: (context, index) {
+                    final comment = commentsToShow[index];
+                    final userName = _userNames[comment.userId] ?? 'Anonymous';
+
+                    final bool canDelete = _currentUser != null &&
+                        _currentUser!.uid == comment.userId;
+
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      padding: const EdgeInsets.all(12.0),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey.shade900
+                            : Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey.shade700
+                              : Colors.grey.shade300,
+                          width: 1.0,
+                        ),
+                        boxShadow: Theme.of(context).brightness == Brightness.light
+                            ? [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 3,
+                            offset: const Offset(0, 1),
+                          ),
+                        ]
+                            : null,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  userName,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Theme.of(context).colorScheme.onSurface,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (canDelete)
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0, top: 0.0, bottom: 0.0),
+                                  child: InkWell(
+                                    onTap: () => _deleteComment(comment.id),
+                                    child: Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(comment.commentText,
+                              style: const TextStyle(fontSize: 14)),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Lat: ${comment.latitude.toStringAsFixed(4)}, Lng: ${comment.longitude.toStringAsFixed(4)} - ${comment.timestamp.toLocal().toString().split('.')[0]}',
+                            style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey[600]),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+                if (hasMoreComments && !_showAllComments)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _showAllComments = true;
+                          });
+                        },
+                        child: Text(
+                          'More Comments (${_comments.length - 3} hidden)',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 24),
+                Text(
+                  'Add a Comment',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onBackground,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _commentController,
+                  maxLines: 4,
+                  decoration: InputDecoration(
+                    hintText: 'Write your comment here...',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    fillColor: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[800]
+                        : Theme.of(context).colorScheme.surface,
+                    filled: true,
+                  ),
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isCommentSubmitting ||
+                        _currentUser == null
+                        ? null
+                        : _submitComment,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      backgroundColor: const Color(0xFF233973),
+                    ),
+                    child: _isCommentSubmitting
+                        ? const CircularProgressIndicator(
+                      color: Colors.white,
+                    )
+                        : Text(
+                      _currentUser == null
+                          ? 'Login to Comment'
+                          : 'Submit Comment',
+                      style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         color: Theme.of(context).colorScheme.surface,
@@ -695,8 +682,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     if (_currentUser == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content: Text(
-                                'You must be logged in to favorite a book.')),
+                            content: Text('You must be logged in to favorite a book.')),
                       );
                       setState(() {
                         isBookmarked = !isBookmarked;
@@ -721,7 +707,8 @@ class _DetailScreenState extends State<DetailScreen> {
                     }
                   } catch (e) {
                     setState(() {
-                      isBookmarked = !isBookmarked;
+                      isBookmarked =
+                      !isBookmarked;
                     });
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -735,7 +722,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     borderRadius: BorderRadius.circular(5),
                   ),
                   backgroundColor:
-                      isBookmarked ? Colors.red : const Color(0xFF233973),
+                  isBookmarked ? Colors.red : const Color(0xFF233973),
                 ),
                 child: Text(
                   isBookmarked ? 'Remove From Favorites' : 'Add To Favorites',
@@ -754,8 +741,7 @@ class _DetailScreenState extends State<DetailScreen> {
                   if (_currentUser == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content:
-                              Text('You must be logged in to give a rating.')),
+                          content: Text('You must be logged in to give a rating.')),
                     );
                     return;
                   }
