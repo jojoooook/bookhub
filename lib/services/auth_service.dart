@@ -28,10 +28,11 @@ class AuthService {
       await _firestore.collection('users').doc(uid).set({
         'name': name,
         'phone': phone,
-        'birthday': birthday.toIso8601String(),
+        'birthday': birthday.toIso8601String().split('T')[0], // Ini akan menghasilkan "YYYY-MM-DD"
       });
     } catch (e) {
       print('Error saving user profile: $e');
+      throw Exception('Error saving user profile: $e');
     }
   }
 
@@ -40,11 +41,36 @@ class AuthService {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      User? user = result.user;
-      return user;
+      return result.user;
+    } on FirebaseAuthException catch (e) {
+      // Handle specific Firebase Auth errors
+      print(e.code); // For debugging
+      if (e.code == 'user-not-found') {
+        throw Exception('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        throw Exception('Wrong password provided for that user.');
+      } else if (e.code == 'invalid-email') {
+        throw Exception('The email address is not valid.');
+      }
+      throw Exception('Failed to sign in: ${e.message}');
     } catch (e) {
-      print('Sign In Error: $e');
-      return null;
+      throw Exception('An unknown error occurred: $e');
+    }
+  }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      // Handle specific Firebase Auth errors
+      if (e.code == 'invalid-email') {
+        throw Exception('The email address is not valid.');
+      } else if (e.code == 'user-not-found') {
+        throw Exception('No user found for that email address.');
+      }
+      throw Exception('Failed to send password reset email: ${e.message}');
+    } catch (e) {
+      throw Exception('An unknown error occurred: $e');
     }
   }
 

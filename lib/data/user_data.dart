@@ -32,7 +32,7 @@ Future<void> loadCurrentUser() async {
   if (email != null) {
     try {
       currentUser = userList.firstWhere(
-            (user) => user.email == email,
+        (user) => user.email == email,
       );
     } catch (e) {
       currentUser = null; // Jika pengguna tidak ditemukan

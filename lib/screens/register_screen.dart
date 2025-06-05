@@ -6,6 +6,8 @@ import 'package:bookhub/services/auth_service.dart';
 class RegisterScreen extends StatefulWidget {
   static const String routeName = '/register';
 
+  const RegisterScreen({super.key});
+
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
@@ -95,7 +97,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(
         child: Column(
           children: [
@@ -128,7 +130,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: TextStyle(
                               fontSize: 36,
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onBackground,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           const SizedBox(height: 24),
@@ -137,16 +139,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             decoration: InputDecoration(
                               labelText: 'Email Address',
                               prefixIcon: Icon(Icons.email_outlined,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onBackground),
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                             style: TextStyle(
-                                color:
-                                    Theme.of(context).colorScheme.onBackground),
+                                color: Theme.of(context).colorScheme.onSurface),
                           ),
                           const SizedBox(height: 16),
                           _buildTextField('Name', Icons.person_outline,
@@ -166,7 +166,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               );
                               if (pickedDate != null) {
                                 setState(() {
-                                  birthday = pickedDate;
+                                  birthday = DateTime(pickedDate.year,
+                                      pickedDate.month, pickedDate.day);
                                 });
                               }
                             },
@@ -177,7 +178,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   prefixIcon: Icon(Icons.cake_outlined,
                                       color: Theme.of(context)
                                           .colorScheme
-                                          .onBackground),
+                                          .onSurface),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -190,7 +191,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 style: TextStyle(
                                     color: Theme.of(context)
                                         .colorScheme
-                                        .onBackground),
+                                        .onSurface),
                               ),
                             ),
                           ),
@@ -201,16 +202,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             decoration: InputDecoration(
                               labelText: 'Password',
                               prefixIcon: Icon(Icons.lock_outline,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onBackground),
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
                             style: TextStyle(
-                                color:
-                                    Theme.of(context).colorScheme.onBackground),
+                                color: Theme.of(context).colorScheme.onSurface),
                           ),
                           const SizedBox(height: 24),
                           ElevatedButton(
@@ -224,9 +223,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ),
                             child: _isLoading
-                                ? CircularProgressIndicator(color: Colors.white)
-                                : Text('SIGN UP',
-                                    style: const TextStyle(
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white)
+                                : const Text('SIGN UP',
+                                    style: TextStyle(
                                         fontSize: 16,
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold)),
@@ -247,7 +247,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context)
                           .colorScheme
-                          .onBackground
+                          .onSurface
                           .withOpacity(0.7)),
                   children: [
                     TextSpan(

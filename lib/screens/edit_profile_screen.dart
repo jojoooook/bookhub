@@ -1,9 +1,5 @@
-import 'dart:io';
-import 'dart:typed_data';
-import 'package:flutter/foundation.dart' show kIsWeb;
-
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; // Paket untuk memilih gambar
+// Paket untuk memilih gambar
 import 'package:bookhub/models/profile.dart';
 import 'package:bookhub/services/profile_services.dart';
 
