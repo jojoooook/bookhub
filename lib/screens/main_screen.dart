@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
-import 'login_screen.dart';
 
 // import 'bookmark_screen.dart';
 // import 'search_screen.dart';
 // import 'profile_screen.dart';
-import 'package:bookhub/screens/home_screen.dart';
 
 import 'favorite_screen.dart';
 import 'search_screen.dart';
@@ -63,7 +61,7 @@ class _MainScreenState extends State<MainScreen> {
         onTap: _onItemTapped,
         showSelectedLabels: true,
         showUnselectedLabels: true,
-        selectedItemColor: Color(0xFF233973),
+        selectedItemColor: const Color(0xFF233973),
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: const TextStyle(

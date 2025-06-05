@@ -228,7 +228,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                       .withOpacity(0.7))),
                           leading: Image.asset(book.imageUrl, width: 50),
                           trailing: IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
+                            icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
                               _removeSearchResult(index);
                             },

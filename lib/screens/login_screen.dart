@@ -57,7 +57,8 @@ class _LoginScreenState extends State<LoginScreen> {
         } else {
           themeProvider.setDarkMode(false);
         }
-        if (mounted) { // Check if widget is still mounted before navigation
+        if (mounted) {
+          // Check if widget is still mounted before navigation
           Navigator.pushNamedAndRemoveUntil(context, '/main', (_) => false);
         }
       } else {

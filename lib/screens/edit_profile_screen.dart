@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// Paket untuk memilih gambar
+import 'package:flutter/services.dart'; // Import for FilteringTextInputFormatter
 import 'package:bookhub/models/profile.dart';
 import 'package:bookhub/services/profile_services.dart';
 
@@ -24,6 +24,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _nameController = TextEditingController(text: widget.profile.name);
     _emailController = TextEditingController(text: widget.profile.email);
     _phoneController = TextEditingController(text: widget.profile.phone);
+
+    // Ensure the birthday is formatted correctly for display
     String birthday = widget.profile.birthday;
     if (birthday.contains('T')) {
       birthday = birthday.split('T')[0];
@@ -38,6 +40,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _phoneController.dispose();
     _birthdayController.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime initialDate;
+    try {
+      initialDate = DateTime.parse(_birthdayController.text);
+    } catch (e) {
+      initialDate = DateTime.now(); // Fallback to current date if parsing fails
+    }
+
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: DateTime(1900),
+      lastDate:
+          DateTime.now(), // Users typically can't have a birthday in the future
+    );
+    if (picked != null) {
+      setState(() {
+        _birthdayController.text = picked.toIso8601String().split('T')[0];
+      });
+    }
   }
 
   void _saveProfile() async {
@@ -103,10 +127,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 TextField(
                   controller: _phoneController,
                   decoration: const InputDecoration(labelText: 'Phone'),
+                  keyboardType: TextInputType.phone, // Suggest numeric keyboard
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly
+                  ], // Only allow digits
                 ),
                 TextField(
                   controller: _birthdayController,
-                  decoration: const InputDecoration(labelText: 'Birthday'),
+                  decoration:
+                      const InputDecoration(labelText: 'Birthday (YYYY-MM-DD)'),
+                  readOnly: true, // Prevent manual input
+                  onTap: () => _selectDate(context), // Show date picker on tap
                 ),
                 const SizedBox(height: 20),
                 Center(

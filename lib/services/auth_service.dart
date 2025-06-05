@@ -23,16 +23,25 @@ class AuthService {
 
   // Save additional user profile data to Firestore
   Future<void> saveUserProfile(
-      String uid, String name, String phone, DateTime birthday) async {
+      String uid,
+      String name,
+      String phone,
+      DateTime birthday,
+      String email, // <-- Tambahkan parameter email
+      bool darkMode // <-- Tambahkan parameter darkMode
+      ) async {
     try {
       await _firestore.collection('users').doc(uid).set({
         'name': name,
         'phone': phone,
-        'birthday': birthday.toIso8601String().split('T')[0], // Ini akan menghasilkan "YYYY-MM-DD"
+        'birthday':
+            birthday.toIso8601String().split('T')[0], // Simpan hanya tanggal
+        'email': email, // <-- Simpan email
+        'darkMode': darkMode, // <-- Simpan darkMode
       });
     } catch (e) {
       print('Error saving user profile: $e');
-      throw Exception('Error saving user profile: $e');
+      throw Exception('Failed to save user profile: $e');
     }
   }
 

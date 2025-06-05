@@ -1,5 +1,6 @@
+import 'package:bookhub/screens/register_screen.dart'; // Ini mungkin harusnya ke file lain jika register_screen mengimpor dirinya sendiri
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart'; // Perlu untuk GestureRecognizer
+import 'package:flutter/gestures.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bookhub/services/auth_service.dart';
 
@@ -21,6 +22,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   final AuthService _authService = AuthService();
 
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    nameController.dispose();
+    phoneController.dispose();
+    super.dispose();
+  }
+
   Future<void> _register() async {
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
@@ -40,17 +50,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
       try {
         final user = await _authService.signUp(email, password);
         if (user != null) {
-          await _authService.saveUserProfile(user.uid, name, phone, birthDate);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Registration successful! Please login.')),
+          // --- BARIS INI YANG PERLU DIUBAH ---
+          // Mengirim email dan nilai default false untuk darkMode
+          await _authService.saveUserProfile(
+            user.uid,
+            name,
+            phone,
+            birthDate,
+            email, // Kirim email
+            false, // Default darkMode ke false
           );
-          Navigator.pushNamedAndRemoveUntil(context, '/login', (_) => false);
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Registration successful! Please login.')),
+            );
+            Navigator.pushNamedAndRemoveUntil(context, '/login', (_) => false);
+          }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Registration failed. Please try again.')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Registration failed. Please try again.')),
+            );
+          }
         }
       } on FirebaseAuthException catch (e) {
         String errorMessage;
@@ -71,22 +95,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
           default:
             errorMessage = 'Registration error: ${e.message}';
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage)),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errorMessage)),
+          );
+        }
       } catch (e) {
         String errorMessage = e.toString();
         if (errorMessage.contains('permission-denied')) {
           errorMessage = 'Permission denied: Unable to save user profile data.';
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration error: $errorMessage')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Registration error: $errorMessage')),
+          );
+        }
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please fill all fields')),
+        );
+      }
     }
 
     setState(() {
@@ -136,6 +166,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 24),
                           TextField(
                             controller: emailController,
+                            keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               labelText: 'Email Address',
                               prefixIcon: Icon(Icons.email_outlined,
@@ -166,6 +197,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               );
                               if (pickedDate != null) {
                                 setState(() {
+                                  // Memastikan hanya tanggal yang diambil (waktu diatur ke 00:00:00)
                                   birthday = DateTime(pickedDate.year,
                                       pickedDate.month, pickedDate.day);
                                 });
