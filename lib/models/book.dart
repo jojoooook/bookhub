@@ -1,17 +1,13 @@
-// lib/models/book.dart
-
-import 'dart:convert';
-
 class Book {
   final String id;
   final String title;
   final String author;
   final String imageUrl;
   final String genre;
-  final double rating;
+  final double rating; // This might be an average rating, or initial rating
   final String pages;
   final String synopsis;
-  final String date;
+  final String date; // Consider using DateTime if you need date calculations
 
   Book({
     required this.id,
@@ -24,6 +20,7 @@ class Book {
     required this.synopsis,
     required this.date,
   });
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -38,18 +35,18 @@ class Book {
     };
   }
 
-  // Konversi dari JSON
   factory Book.fromJson(Map<String, dynamic> json) {
     return Book(
       id: json['id'] ?? '',
-      title: json['title'],
-      author: json['author'],
-      imageUrl: json['imageUrl'],
-      synopsis: json['synopsis'],
-      genre: json['genre'],
-      date: json['date'],
-      pages: json['pages'],
-      rating: json['rating'].toDouble(),
+      title: json['title'] ?? 'No Title',
+      author: json['author'] ?? 'Unknown Author',
+      imageUrl:
+          json['imageUrl'] ?? 'assets/images/placeholder.png', // Fallback image
+      synopsis: json['synopsis'] ?? 'No synopsis available.',
+      genre: json['genre'] ?? 'Unknown',
+      date: json['date'] ?? 'Unknown Date',
+      pages: json['pages'] ?? 'N/A',
+      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }

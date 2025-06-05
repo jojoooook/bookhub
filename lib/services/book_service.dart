@@ -14,7 +14,7 @@ class BookService {
     try {
       final querySnapshot = await _firestore.collection(collectionPath).get();
       return querySnapshot.docs
-          .map((doc) => Book.fromJson(doc.data() as Map<String, dynamic>))
+          .map((doc) => Book.fromJson(doc.data()))
           .toList();
     } catch (e) {
       print('Error fetching books: $e');
@@ -28,7 +28,7 @@ class BookService {
       final docSnapshot =
           await _firestore.collection(collectionPath).doc(bookId).get();
       if (docSnapshot.exists) {
-        return Book.fromJson(docSnapshot.data()! as Map<String, dynamic>);
+        return Book.fromJson(docSnapshot.data()!);
       }
       return null;
     } catch (e) {
@@ -45,7 +45,7 @@ class BookService {
           .where('genre', isEqualTo: genre)
           .get();
       return querySnapshot.docs
-          .map((doc) => Book.fromJson(doc.data() as Map<String, dynamic>))
+          .map((doc) => Book.fromJson(doc.data()))
           .toList();
     } catch (e) {
       print('Error fetching books by genre: $e');
@@ -70,7 +70,7 @@ class BookService {
       }
     } catch (e) {
       print('Error adding to favorites: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -88,7 +88,7 @@ class BookService {
       }
     } catch (e) {
       print('Error removing from favorites: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -173,7 +173,7 @@ class BookService {
       }
     } catch (e) {
       print('Error adding comment: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -187,16 +187,48 @@ class BookService {
           .orderBy('timestamp', descending: true)
           .get();
 
-      return querySnapshot.docs
-          .map((doc) => Comment.fromJson(doc.data() as Map<String, dynamic>))
-          .toList();
+      return querySnapshot.docs.map((doc) {
+        return Comment.fromJson(doc.data());
+      }).toList();
     } catch (e) {
       print('Error fetching comments: $e');
       return [];
     }
   }
 
+  Future<void> deleteComment(String bookId, String commentId) async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        // Ambil komentar untuk memastikan pengguna yang menghapus adalah pemiliknya
+        final commentDoc = await _firestore
+            .collection(collectionPath)
+            .doc(bookId)
+            .collection('comments')
+            .doc(commentId)
+            .get();
+
+        if (commentDoc.exists && commentDoc.data()?['userId'] == user.uid) {
+          await _firestore
+              .collection(collectionPath)
+              .doc(bookId)
+              .collection('comments')
+              .doc(commentId)
+              .delete();
+        } else {
+          throw Exception('You are not authorized to delete this comment.');
+        }
+      } else {
+        throw Exception('User not logged in.');
+      }
+    } catch (e) {
+      print('Error deleting comment: $e');
+      rethrow;
+    }
+  }
+
   // Add rating to a book by user
+  // This method will create or update a user's rating for a specific book.
   Future<void> addRating({
     required String bookId,
     required double ratingValue,
@@ -204,14 +236,16 @@ class BookService {
     try {
       final user = _auth.currentUser;
       if (user != null) {
+        // Use user.uid as the document ID for ratings to ensure only one rating per user per book
         final ratingRef = _firestore
             .collection(collectionPath)
             .doc(bookId)
             .collection('ratings')
-            .doc(user.uid);
+            .doc(user.uid); // Document ID is the user's UID
 
         await ratingRef.set({
-          'id': ratingRef.id,
+          'id': ratingRef
+              .id, // The ID of the rating document (same as user.uid here)
           'userId': user.uid,
           'bookId': bookId,
           'ratingValue': ratingValue,
@@ -219,7 +253,7 @@ class BookService {
       }
     } catch (e) {
       print('Error adding rating: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -233,11 +267,49 @@ class BookService {
           .get();
 
       return querySnapshot.docs
-          .map((doc) => Rating.fromJson(doc.data() as Map<String, dynamic>))
+          .map((doc) => Rating.fromJson(doc.data()))
           .toList();
     } catch (e) {
       print('Error fetching ratings: $e');
       return [];
+    }
+  }
+
+  Future<double?> getUserRating(String bookId) async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final docSnapshot = await _firestore
+            .collection(collectionPath)
+            .doc(bookId)
+            .collection('ratings')
+            .doc(user.uid) // Query using the user's UID
+            .get();
+
+        if (docSnapshot.exists && docSnapshot.data() != null) {
+          final ratingData = docSnapshot.data()!;
+          return (ratingData['ratingValue'] as num?)?.toDouble();
+        }
+      }
+      return null; // User not logged in or no rating found
+    } catch (e) {
+      print('Error getting user rating: $e');
+      return null;
+    }
+  }
+
+  Future<String?> getUserName(String userId) async {
+    try {
+      // Asumsi: Koleksi 'users' ada dan doc ID-nya adalah userId
+      final docSnapshot =
+          await _firestore.collection('users').doc(userId).get();
+      if (docSnapshot.exists && docSnapshot.data() != null) {
+        return docSnapshot.data()!['name'] as String?; // Ambil field 'name'
+      }
+      return null; // Pengguna tidak ditemukan atau tidak punya field 'name'
+    } catch (e) {
+      print('Error fetching user name for ID $userId: $e');
+      return null;
     }
   }
 }

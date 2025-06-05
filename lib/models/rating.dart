@@ -22,10 +22,10 @@ class Rating {
 
   factory Rating.fromJson(Map<String, dynamic> json) {
     return Rating(
-      id: json['id'],
-      userId: json['userId'],
-      bookId: json['bookId'],
-      ratingValue: json['ratingValue'].toDouble(),
+      id: json['id'] ?? '',
+      userId: json['userId'] ?? '',
+      bookId: json['bookId'] ?? '',
+      ratingValue: (json['ratingValue'] as num?)?.toDouble() ?? 0.0,
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Comment {
   final String id;
   final String userId;
@@ -28,20 +30,30 @@ class Comment {
       'latitude': latitude,
       'longitude': longitude,
       'city': city,
-      'timestamp': timestamp.toIso8601String(),
+      'timestamp': Timestamp.fromDate(timestamp),
     };
   }
 
   factory Comment.fromJson(Map<String, dynamic> json) {
+    DateTime parsedTimestamp;
+    if (json['timestamp'] is Timestamp) {
+      parsedTimestamp = (json['timestamp'] as Timestamp).toDate();
+    } else {
+      print(
+          'Warning: Timestamp for comment is not a Firestore Timestamp object. Using DateTime.now(). Raw value: ${json['timestamp']}');
+      parsedTimestamp = DateTime.now();
+    }
+
     return Comment(
-      id: json['id'],
-      userId: json['userId'],
-      bookId: json['bookId'],
-      commentText: json['commentText'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      city: json['city'],
-      timestamp: DateTime.parse(json['timestamp']),
+      id: json['id'] ?? '',
+      userId: json['userId'] ?? '',
+      bookId: json['bookId'] ?? '',
+      commentText: json['commentText'] ?? '',
+      latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
+      longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
+      city: json['city'] ??
+          'Unknown City', // Defaults to 'Unknown City' if not found
+      timestamp: parsedTimestamp,
     );
   }
 }
