@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 
-// import 'bookmark_screen.dart';
-// import 'search_screen.dart';
-// import 'profile_screen.dart';
-
 import 'favorite_screen.dart';
 import 'search_screen.dart';
 import 'profile_screen.dart';

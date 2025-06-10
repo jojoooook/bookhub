@@ -10,9 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:bookhub/main.dart'; // Asumsikan ThemeProvider ada di main.dart
 
 class ProfileScreen extends StatefulWidget {
-  final Function(bool)? onThemeChanged;
-
-  const ProfileScreen({super.key, this.onThemeChanged});
+  const ProfileScreen({super.key});
   static const String routeName = '/profile';
 
   @override
@@ -78,9 +76,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final profileService = ProfileService();
     profile.darkMode = value;
     await profileService.saveProfile(profile);
-    if (widget.onThemeChanged != null) {
-      widget.onThemeChanged!(value);
-    }
+    // if (widget.onThemeChanged != null) {
+    //   widget.onThemeChanged!(value);
+    // }
   }
 
   Future<void> _logout() async {
@@ -89,11 +87,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
       themeProvider.setDarkMode(false);
       await logoutUser(); // Fungsi logout dari user_data.dart
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/login',
-        (Route<dynamic> route) => false,
-      ); // Navigasi ke LoginScreen
+      // Navigator.pushNamedAndRemoveUntil(
+      //   context,
+      //   '/login',
+      //   (Route<dynamic> route) => false,
+      // );
     }
   }
 
