@@ -1,9 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  static const String _uidKey = 'uid';
+  static const String _emailKey = 'email';
 
   // Sign up with email and password
   Future<User?> signUp(String email, String password) async {
@@ -50,7 +54,14 @@ class AuthService {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      return result.user;
+      final user = result.user;
+      if (user != null) {
+        // Persist user credentials
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(_uidKey, user.uid);
+        await prefs.setString(_emailKey, email);
+      }
+      return user;
     } on FirebaseAuthException catch (e) {
       // Handle specific Firebase Auth errors
       print(e.code); // For debugging
@@ -65,6 +76,17 @@ class AuthService {
     } catch (e) {
       throw Exception('An unknown error occurred: $e');
     }
+  }
+
+  // Check if user is already signed in
+  Future<String?> checkSignIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    final uid = prefs.getString(_uidKey);
+
+    if (uid != null) {
+      return uid;
+    }
+    return null;
   }
 
   Future<void> sendPasswordResetEmail(String email) async {
@@ -86,6 +108,10 @@ class AuthService {
   // Sign out
   Future<void> signOut() async {
     await _auth.signOut();
+    // Remove stored credentials
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_uidKey);
+    await prefs.remove(_emailKey);
   }
 
   // Get current user
